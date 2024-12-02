@@ -1,0 +1,4 @@
+- exec: Comando para ejecutar el archivo principal con ts-node.
+- watch: Directorio que Nodemon debe observar
+- ext: Extensiones de archivo que debe observar (en este caso, archivos TypeScript)
+- ignore: Ignorar la carpeta node_modules
