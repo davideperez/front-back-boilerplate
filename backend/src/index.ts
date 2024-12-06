@@ -2,14 +2,33 @@ import express from 'express';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import helmet from 'helmet';
+import cors, { CorsOptions } from 'cors';
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Uses
+// Leer el whitelist desde las variables de entorno
+const whitelist = process.env.CORS_WHITELIST?.split(',') || [];
 
+// Config de CORS
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Si hay origin y esta incluido en la whitelist devuelve true.
+    if (!origin || whitelist.includes(origin)) {
+      callback(null, true);
+      // Sino devuelve un Err.
+    } else {
+      callback(new Error('Origen no permitido por CORS')); // Bloquear origen
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+  credentials: true, // Permitir cookies y encabezados de autorización
+};
+
+// Uses
+app.use(cors(corsOptions));
 app.use(helmet());
 
 // Morgan según el entorno sea desarrollo o producción
