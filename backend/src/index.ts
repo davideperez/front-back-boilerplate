@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
 
 import api from './api';
+import connectMongoDB from './infrastructure/repositories/clients/mongodb.client';
 
 // Injects the enviroment variables
 dotenv.config();
@@ -26,7 +27,7 @@ const corsOptions = {
       callback(new Error('Origen no permitido por CORS')); // Bloquear origen
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // TBD: Hace falta agregar el OPTION?
   credentials: true, // Permitir cookies y encabezados de autorización
 };
 
@@ -48,12 +49,13 @@ if (process.env.NODE_ENV === 'production') {
 // 4 Parses incoming requests to json
 app.use(express.json());
 
+connectMongoDB()
+
 // Routes
 
 app.use('/v1', api);
 
 // Server Start
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+  console.log(`🌎 Servidor corriendo en http://localhost:${port}`);
 });
-
