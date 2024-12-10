@@ -4,15 +4,18 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
 
+import api from './api';
+
+// Injects the enviroment variables
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Leer el whitelist desde las variables de entorno
+// Creates the whitelist from the .env
 const whitelist = process.env.CORS_WHITELIST?.split(',') || [];
 
-// Config de CORS
+// CORS Configuration
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Si hay origin y esta incluido en la whitelist devuelve true.
@@ -28,22 +31,29 @@ const corsOptions = {
 };
 
 // Uses
+
+// 1 Cors
 app.use(cors(corsOptions));
+
+// 2 helmet
 app.use(helmet());
 
-// Morgan según el entorno sea desarrollo o producción
+// 3 Morgan: The style changes 
 if (process.env.NODE_ENV === 'production') {
   app.use(morgan('combined'));  // Para producción, más detallado
 } else {
   app.use(morgan('dev'));  // Para desarrollo, más compacto y con colores
 }
 
-// Rutas
+// 4 Parses incoming requests to json
+app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Hola Mundo desde Node.js con TypeScript y Express!!!');
-});
+// Routes
 
+app.use('/v1', api);
+
+// Server Start
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+
