@@ -1,13 +1,13 @@
-import { Query } from "mongoose";
 import { User } from "../../domain/entities/users.entity"; 
 import { UsersCreate } from "../../domain/models/users.createDto";
 import { UserRepository } from "../../domain/repositories/users.repository";
 import { UserDB } from './schemas/users.mongoose'
 import { GetAllUsersDTO } from "../../domain/models/users.getAllDto";
-import { stringify } from "node:querystring";
+import { UpdatedUser } from "../../domain/models/users.updateDto";
 
-// 3. UserMongoRepository cumple el contrato de user.repository.ts
 export class UserMongoRepository implements UserRepository {
+
+
   async getAllUsers(page: number, items: number, search: string): Promise<GetAllUsersDTO | undefined> {
     try {
       const query: {[key: string]: any} = {};
@@ -29,36 +29,94 @@ export class UserMongoRepository implements UserRepository {
 
       return result
     } catch (error) {
-      throw new Error("Error in getAllUsers - Method not implemented.");
+      throw new Error("Error fetching the users."); // TODO: mejorar estos errores.
     }
   }
-  async createUser(user: UsersCreate): Promise<any> { //TBD revisar este tipo.
-    try { 
-      console.log('from users.mongodb.ts > createUser() > user', user)
-      const newUser = new UserDB(user)
-      await newUser.save()
-    } catch (error) {
-      throw error
-    } 
-  }
   
-  async getUserById(id: number): Promise<User | undefined> {
+  async getUserById(id: string): Promise<User | undefined> {
     try {
+      if (!id) {
+        throw new Error("Invalid ID.");
+      }
+      // 1 Se hace fetch del usaurio, a la db de mongo.
       const user = await UserDB.findById(id)
-
+      // 2 Se valida que exista usuario.
       if (!user) {
         throw new Error()
       }
-      
+      // 3 se construye el usuario 
+      // TODO: Esto no deberia usarse la interfaz del dto?
+      // TODO: Este armado de la entidad no deberia ir en el useCase?
       const userEntity: User = {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email
       }
-      return userEntity  
+      // 4 Se retorna el usuario. 
+      return userEntity
     } catch (error) {
-      throw error
+      console.error("Error: ", error) // TODO: a mejorar.
     }
     
+  }
+
+  async createUser(user: UsersCreate): Promise<any> { // TODO: revisar este tipo.
+    try { 
+      // 1 Se instancia un nuevo usuario usando el schema de mongo.
+      const newUser = new UserDB(user)
+      
+      // 2 Se guarda el usuario en mongodb.
+      await newUser.save()
+    } catch (error) {
+      console.error('No se pudo crear el usuario.', error)
+    } 
+  }
+
+  async updateUserById(id: string, user: UpdatedUser): Promise<User | undefined> {
+    try {
+      // 1. Validar que el ID no sea nulo o vacío
+      if (!id) {
+        throw new Error("Invalid ID.");
+      }
+  
+      // 2. Realizar la actualización de los campos proporcionados
+      const updatedUser = await UserDB.findByIdAndUpdate(
+        id,
+        { $set: user }, // Solo actualiza los campos que estén en el objeto `user`
+        { new: true }   // Retorna el documento actualizado
+      ).select('-__v');  // Excluir el campo `__v` de la respuesta
+  
+      // 3. Verificar que el usuario exista después de la actualización
+      if (!updatedUser) {
+        throw new Error("User not found.");
+      }
+      // 4 Devuelve el usuario actualizado
+      return updatedUser;
+    } catch (error: any) {
+      console.error("Error updating user: ", error.message);
+      throw new Error("Error updating the user.");
+    }
+  
+  }
+
+  async deleteUserById(id: string): Promise<User> {
+    try {
+      // 1. Validate that the ID is not null or empty
+      if (!id) {
+        throw new Error("Invalid ID.");
+      }
+  
+      // 2. Attempt to delete the user by ID
+      const deletedUser = await UserDB.findByIdAndDelete(id);
+  
+      // 3. Verify that the user was deleted
+      if (!deletedUser) {
+        throw new Error("User not found.");
+      }
+      return deletedUser
+    } catch (error: any) {
+      console.error("Error deleting user: ", error.message);
+      throw new Error("Error deleting the user.");
+    }
   }
 }

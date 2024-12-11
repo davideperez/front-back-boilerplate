@@ -1,5 +1,4 @@
 import { UserRepository } from '../../domain/repositories/users.repository'
-import { User } from '../../domain/entities/users.entity'
 import { GetAllUsersDTO } from '../../domain/models/users.getAllDto'
 
 export class GetAllUsersUseCase {

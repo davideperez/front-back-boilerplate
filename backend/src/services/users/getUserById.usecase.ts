@@ -8,8 +8,9 @@ export class GetUserByIdUseCase {
     this.repository = repository
   }
 
-  async execute(id: number):Promise<User | undefined> {
+  async execute(id: string):Promise<User | undefined> {
     const user = await this.repository.getUserById(id)
+    
     return user
   }
 }
