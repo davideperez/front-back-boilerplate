@@ -1,5 +1,6 @@
 import { UserRepository } from '../../domain/repositories/users.repository';
 import { User } from '../../domain/entities/users.entity';
+import { UpdatedUserDto } from '../../domain/dtos/users/users.updateDto';
 
 export class UpdateUserByIdUseCase {
   repository: UserRepository;
@@ -8,7 +9,7 @@ export class UpdateUserByIdUseCase {
     this.repository = repository;
   }
 
-  async execute(id: string, updatedData: Partial<User>): Promise<User | undefined> {
+  async execute(id: string, updatedData: UpdatedUserDto): Promise<UpdatedUserDto | undefined> {
     try {
       const updatedUser = await this.repository.updateUserById(id, updatedData);
 
@@ -16,7 +17,7 @@ export class UpdateUserByIdUseCase {
         throw new Error("User not found.");
       }
       
-      const userEntity: User = {
+      const userEntity = {
         firstName: updatedUser.firstName,
         lastName: updatedUser.lastName,
         email: updatedUser.email,

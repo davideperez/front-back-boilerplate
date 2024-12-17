@@ -1,13 +1,24 @@
 import { User } from "../../domain/entities/users.entity"; 
-import { UsersCreate } from "../../domain/models/users.createDto";
+import { UsersCreate } from "../../domain/dtos/users/users.createDto";
 import { UserRepository } from "../../domain/repositories/users.repository";
 import { UserDB } from './schemas/users.mongoose'
-import { GetAllUsersDTO } from "../../domain/models/users.getAllDto";
-import { UpdatedUser } from "../../domain/models/users.updateDto";
+import { GetAllUsersDTO } from "../../domain/dtos/users/users.getAllDto";
+import { UpdatedUser } from "../../domain/dtos/users/users.updateDto";
+import { LoginUserDto } from "../../domain/dtos/users/users.loginDto";
+import { GetUser } from "../../domain/dtos/users/users.getByIdDto";
 
 export class UserMongoRepository implements UserRepository {
-
-
+  async createUser(user: UsersCreate): Promise<void> { // TODO: revisar este tipo.
+    try { 
+      // 1 Se instancia un nuevo usuario usando el schema de mongo.
+      const newUser = new UserDB(user)
+      
+      // 2 Se guarda el usuario en mongodb.
+      await newUser.save()
+    } catch (error) {
+      console.error('No se pudo crear el usuario.', error)
+    } 
+  }
   async getAllUsers(page: number, items: number, search: string): Promise<GetAllUsersDTO | undefined> {
     try {
       const query: {[key: string]: any} = {};
@@ -32,8 +43,7 @@ export class UserMongoRepository implements UserRepository {
       throw new Error("Error fetching the users."); // TODO: mejorar estos errores.
     }
   }
-  
-  async getUserById(id: string): Promise<User | undefined> {
+  async getUserById(id: string): Promise<GetUser | undefined> {
     try {
       if (!id) {
         throw new Error("Invalid ID.");
@@ -47,7 +57,7 @@ export class UserMongoRepository implements UserRepository {
       // 3 se construye el usuario 
       // TODO: Esto no deberia usarse la interfaz del dto?
       // TODO: Este armado de la entidad no deberia ir en el useCase?
-      const userEntity: User = {
+      const userEntity: GetUser = {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email
@@ -59,19 +69,30 @@ export class UserMongoRepository implements UserRepository {
     }
     
   }
-
-  async createUser(user: UsersCreate): Promise<any> { // TODO: revisar este tipo.
-    try { 
-      // 1 Se instancia un nuevo usuario usando el schema de mongo.
-      const newUser = new UserDB(user)
-      
-      // 2 Se guarda el usuario en mongodb.
-      await newUser.save()
+  async findUserByEmail(email: string): Promise<LoginUserDto | undefined> {
+    try {
+      if (!email) {
+        throw new Error("Invalid email.");
+      }
+      // 1 Se hace fetch del usaurio, a la db de mongo.
+      const user = await UserDB.findById(email)
+      // 2 Se valida que exista usuario.
+      if (!user) {
+        throw new Error()
+      }
+      // 3 se construye el usuario 
+      // TODO: Esto no deberia usarse la interfaz del dto?
+      // TODO: Este armado de la entidad no deberia ir en el useCase?
+      const userEntity: LoginDto = {
+        password: user.password,
+        email: user.email
+      }
+      // 4 Se retorna el usuario. 
+      return userEntity
     } catch (error) {
-      console.error('No se pudo crear el usuario.', error)
-    } 
+      console.error("Error: ", error) // TODO: a mejorar.
+    }
   }
-
   async updateUserById(id: string, user: UpdatedUser): Promise<User | undefined> {
     try {
       // 1. Validar que el ID no sea nulo o vacío
@@ -98,7 +119,6 @@ export class UserMongoRepository implements UserRepository {
     }
   
   }
-
   async deleteUserById(id: string): Promise<User> {
     try {
       // 1. Validate that the ID is not null or empty

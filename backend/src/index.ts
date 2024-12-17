@@ -7,16 +7,20 @@ import cors, { CorsOptions } from 'cors';
 import api from './api';
 import connectMongoDB from './infrastructure/repositories/clients/mongodb.client';
 
-// Injects the enviroment variables
+// ---------------- Initial Setup ----------------  //
+
+// 1 Injects the enviroment variables
 dotenv.config();
 
+// 2 express server instantiation
 const app = express();
+
+// 3 port retrieval
 const port = process.env.PORT || 3000;
 
-// Creates the whitelist from the .env
+// 4 cors Configuration
 const whitelist = process.env.CORS_WHITELIST?.split(',') || [];
 
-// CORS Configuration
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
     // Si hay origin y esta incluido en la whitelist devuelve true.
@@ -31,7 +35,7 @@ const corsOptions = {
   credentials: true, // Permitir cookies y encabezados de autorización
 };
 
-// Uses
+// -------------------- Uses --------------------  //
 
 // 1 Cors
 app.use(cors(corsOptions));
@@ -49,13 +53,16 @@ if (process.env.NODE_ENV === 'production') {
 // 4 Parses incoming requests to json
 app.use(express.json());
 
+// --------------- DB connection ---------------  //
+
 connectMongoDB()
 
-// Routes
+// ------------------ Routes ------------------  //
 
 app.use('/v1', api);
 
-// Server Start
+// --------------- Server Start ---------------  //
+
 app.listen(port, () => {
   console.log(`🌎 Servidor corriendo en http://localhost:${port}`);
 });
