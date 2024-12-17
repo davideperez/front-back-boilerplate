@@ -1,18 +1,40 @@
+/* 
+  Un controller no tiene que ver con el dominio, todavia es web.
+    Ej: Deserializa, convierte, si se sube archivo lo baja del request.
+*/
 import { Request, Response } from 'express'
 import { GetUserByIdUseCase } from '../../services/users/getUserById.usecase'
 import { CreateUserUseCase } from '../../services/users/createUser.usecase';
 import { GetAllUsersUseCase } from '../../services/users/getAllUsers.usecase';
 import { UpdateUserByIdUseCase } from '../../services/users/updateUser.usecase';
 import { DeleteUserByIdUseCase } from '../../services/users/deleteUserById.usecase';
+import { FindUserByEmailUseCase } from '../../services/users/findUserByEmail.usecase';
 
 export class UserController {
-  constructor (
-    private readonly getUserByIdUseCase: GetUserByIdUseCase, 
-    private readonly createUser: CreateUserUseCase,
-    private readonly getAllUsers: GetAllUsersUseCase,
-    private readonly updateUserById: UpdateUserByIdUseCase,
-    private readonly deleteUserById: DeleteUserByIdUseCase,
-  ) {}
+    // Propiedades.
+    private readonly createUser: CreateUserUseCase
+    private readonly getUserByIdUseCase: GetUserByIdUseCase
+    private readonly getAllUsers: GetAllUsersUseCase
+    private readonly findUserByEmail: FindUserByEmailUseCase
+    private readonly updateUserById: UpdateUserByIdUseCase
+    private readonly deleteUserById: DeleteUserByIdUseCase
+  constructor (input: {
+      readonly createUserService: CreateUserUseCase,
+      readonly getUserByIdService: GetUserByIdUseCase,
+      readonly getAllUsersService: GetAllUsersUseCase,
+      readonly findUserByEmailService: FindUserByEmailUseCase,
+      readonly updateUserByIdService: UpdateUserByIdUseCase,
+      readonly deleteUserByIdService: DeleteUserByIdUseCase,
+    }
+  ) {
+    // Propiedades en el objeto construido.
+    this.createUser = input.createUserService
+    this.getUserByIdUseCase = input.getUserByIdService
+    this.getAllUsers = input.getAllUsersService
+    this.findUserByEmail = input.findUserByEmailService
+    this.updateUserById = input.updateUserByIdService
+    this.deleteUserById = input.deleteUserByIdService
+  }
 
   httpGetAllUsers = async (req: Request, res: Response): Promise<void>  => {
     try {
@@ -38,12 +60,37 @@ export class UserController {
 
   httpGetUser = async (req: Request, res: Response): Promise<void> => {
     try {
-      console.log('users.controller.ts > httpGetUser > req.params.id: ', req.params.id) // No llega
+      console.log('users.controller.ts > httpGetUser > req.params.id: ', req.params.id)
       // 1 Se extrae el id de la url.
       const userId = req.params.id;
 
       // 2 Se realiza el fetch a la db de manera agnostica.
       const user = await this.getUserByIdUseCase.execute(userId)
+
+      // 3 Se valida que exista el usuario.
+      if (!user) {
+        res.status(404).json({ error: 'User not found' });
+        return;
+      }
+
+      // 4 Se devuelve el usuario
+      res.status(200).json(user)
+    } catch (err: any) {
+        res.status(500).json({
+            error: err.message,
+        })
+    }
+  };
+
+  httpFindUserByEmail = async (req: Request, res: Response): Promise<void> => {
+    try {
+      console.log('users.controller.ts > httpFindUserByEmail > req.body: ', req.body)
+      console.log('users.controller.ts > httpFindUserByEmail > req.body.email: ', req.body.email)
+      // 1 Se extrae el id de la url.
+      const userEmail = req.body.email;
+
+      // 2 Se realiza el fetch a la db de manera agnostica.
+      const user = await this.findUserByEmail.execute(userEmail)
 
       // 3 Se valida que exista el usuario.
       if (!user) {

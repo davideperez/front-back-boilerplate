@@ -1,4 +1,4 @@
-import { User } from '../entities/users.entity';
+import { User } from '../../entities/users.entity';
 
 export interface GetAllUsersDTO {
   users: User[];  // Using User interface for the array
