@@ -34,3 +34,4 @@ Boilerplate de un *front react+vite* y un *back nodejs+ts* con las configuracion
 6. Manejo de Formularios: Formik #tbd
 7. Autenticacion #tbd
 8. Configuración via CLI #tbd
+
