@@ -1,28 +1,28 @@
-import { UserController } from "./infrastructure/controllers/users.controller";
-import { UserMongoRepository } from "./infrastructure/repositories/users.mongdb";
+import { ExpressUsersController } from "./Users/infrastructure/users.controller.express";
+import { UserMongoRepository } from "./Users/infrastructure/repositories/mongodb/users.mongdb";
 
-import { CreateUserUseCase } from "./services/users/createUser.usecase";
-import { GetAllUsersUseCase } from "./services/users/getAllUsers.usecase";
-import { GetUserByIdUseCase } from "./services/users/getUserById.usecase";
-import { FindUserByEmailUseCase } from "./services/users/findUserByEmail.usecase";
-import { UpdateUserByIdUseCase } from "./services/users/updateUser.usecase";
-import { DeleteUserByIdUseCase } from "./services/users/deleteUserById.usecase";
+import { CreateUserUseCase } from "./Users/services/createUser.usecase";
+import { GetAllUsersUseCase } from "./Users/services/getAllUsers.usecase";
+import { GetUserByIdUseCase } from "./Users/services/getUserById.usecase";
+import { FindUserByEmailUseCase } from "./Users/services/findUserByEmail.usecase";
+import { UpdateUserByIdUseCase } from "./Users/services/updateUser.usecase";
+import { DeleteUserByIdUseCase } from "./Users/services/deleteUserById.usecase";
 
 // ---------------- Users ----------------  //
 
-// 1 Instanciamos un MongoRepository que cumple con el contrato de user.repositories.ts
-const userMongoRepository = new UserMongoRepository()
+// Repositorio (Domain)
+const userRepository = new UserMongoRepository()
 
-// 2 Instanciamos el servicio con MongoDB. 
-export const createUserService = new CreateUserUseCase(userMongoRepository)
-export const getUserByIdService = new GetUserByIdUseCase(userMongoRepository)
-export const getAllUsersService = new GetAllUsersUseCase(userMongoRepository)
-export const findUserByEmailService = new FindUserByEmailUseCase(userMongoRepository)
-export const updateUserByIdService = new UpdateUserByIdUseCase(userMongoRepository)
-export const deleteUserByIdService = new DeleteUserByIdUseCase(userMongoRepository)
+// Servicios (Aplication)
+export const createUserService = new CreateUserUseCase(userRepository)
+export const getUserByIdService = new GetUserByIdUseCase(userRepository)
+export const getAllUsersService = new GetAllUsersUseCase(userRepository)
+export const findUserByEmailService = new FindUserByEmailUseCase(userRepository)
+export const updateUserByIdService = new UpdateUserByIdUseCase(userRepository)
+export const deleteUserByIdService = new DeleteUserByIdUseCase(userRepository)
 
-// 3. Instancio el controllador
-export const userController = new UserController({
+// Controlador (Infrastructure)
+export const usersController = new ExpressUsersController({
   createUserService,
   getUserByIdService,
   getAllUsersService, 
@@ -30,11 +30,6 @@ export const userController = new UserController({
   updateUserByIdService,
   deleteUserByIdService,
 })
-
-
-
-
-
 
 
 
