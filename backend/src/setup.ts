@@ -1,12 +1,12 @@
-import { ExpressUsersController } from "./Users/infrastructure/users.controller.express";
-import { UserMongoRepository } from "./Users/infrastructure/repositories/mongodb/users.mongdb";
+import { ExpressUsersController } from "./modules/Users/infrastructure/users.controller.express";
+import { UserMongoRepository } from "./modules/Users/infrastructure/repositories/mongodb/users.mongdb";
 
-import { CreateUserUseCase } from "./Users/services/createUser.usecase";
-import { GetAllUsersUseCase } from "./Users/services/getAllUsers.usecase";
-import { GetUserByIdUseCase } from "./Users/services/getUserById.usecase";
-import { FindUserByEmailUseCase } from "./Users/services/findUserByEmail.usecase";
-import { UpdateUserByIdUseCase } from "./Users/services/updateUser.usecase";
-import { DeleteUserByIdUseCase } from "./Users/services/deleteUserById.usecase";
+import { CreateUserUseCase } from "./modules/Users/services/createUser.usecase";
+import { GetAllUsersUseCase } from "./modules/Users/services/getAllUsers.usecase";
+import { GetUserByIdUseCase } from "./modules/Users/services/getUserById.usecase";
+import { FindUserByEmailUseCase } from "./modules/Users/services/findUserByEmail.usecase";
+import { UpdateUserByIdUseCase } from "./modules/Users/services/updateUser.usecase";
+import { DeleteUserByIdUseCase } from "./modules/Users/services/deleteUserById.usecase";
 
 // ---------------- Users ----------------  //
 

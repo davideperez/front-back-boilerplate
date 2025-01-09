@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
 
 import api from './api';
-import connectMongoDB from './Users/infrastructure/repositories/mongodb/mongodb.client';
+import connectMongoDB from './modules/Users/infrastructure/repositories/mongodb/mongodb.client';
 
 // ---------------- Initial Setup ----------------  //
 
@@ -64,6 +64,11 @@ app.use('/v1', api);
 // --------------- Server Start ---------------  //
 
 app.listen(port, () => {
+  console.log('---------------------------')
+  console.log('Platform: ', process.platform)
+  console.log('Node Version: ', process.version)
+  console.log('Process ID: ', process.pid)
+  console.log('---------------------------')
   console.log(`🌎 Servidor corriendo en http://localhost:${port}`);
 });
 

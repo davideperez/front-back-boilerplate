@@ -10,6 +10,7 @@ import { UpdateUserByIdUseCase } from '../services/updateUser.usecase';
 import { DeleteUserByIdUseCase } from '../services/deleteUserById.usecase';
 import { FindUserByEmailUseCase } from '../services/findUserByEmail.usecase';
 import { UserErrorFieldsMissing } from '../domain/errors/user.error.fieldsMissing';
+import { UsersCreateDto } from '../domain/dtos/users.createDto';
  
 export class ExpressUsersController {
     // Propiedades
@@ -45,8 +46,7 @@ export class ExpressUsersController {
            
       // 2 Se crea el usuario en la base de datos, de manera agnostica.
 
-      
-      const newUser:  = await this.createUser.execute(user)
+      await this.createUser.execute(user) // Tipo pendiente??
 
       /* if(!newUser) {
         res.status(400).json({error: 'Error creating user'})
@@ -71,6 +71,8 @@ export class ExpressUsersController {
       } else {
         status = 500;
         message = 'Unkown error';
+
+        
       }
       
       res.status(status).json({error: message})

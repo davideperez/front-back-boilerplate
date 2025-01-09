@@ -1,5 +1,5 @@
 import express from 'express';
-import { usersController } from '../../setup';
+import { usersController } from '../../../setup';
 
 const usersRouter = express.Router()
 
