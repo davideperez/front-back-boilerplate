@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
 
 import api from './api';
-import connectMongoDB from './infrastructure/repositories/clients/mongodb.client';
+import connectMongoDB from './connections/mongodb.client';
 
 // Injects the enviroment variables
 dotenv.config();

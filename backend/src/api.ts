@@ -11,6 +11,6 @@ api.get('/', (req, res) => {
 });
 
 api.use('/users', usersRouter);
-api.use('/auth', authRouter);
+//api.use('/auth', authRouter);
 
 export default api;
