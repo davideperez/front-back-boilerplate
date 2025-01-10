@@ -1,6 +1,7 @@
 import express from 'express';
 
-import usersRouters from './infrastructure/routes/users.router'
+import usersRouter from './modules/Users/infrastructure/users.router';
+import authRouter from './modules/Auth/infrastructure/routes/auth.router';
 
 const api = express.Router();
 
@@ -9,6 +10,7 @@ api.get('/', (req, res) => {
   res.send('Hola Mundo desde Node.js con TypeScript y Express!!!');
 });
 
-api.use('/users', usersRouters);
+api.use('/users', usersRouter);
+api.use('/auth', authRouter);
 
 export default api;
