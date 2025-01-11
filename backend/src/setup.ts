@@ -4,7 +4,6 @@ import { UserMongoRepository } from "./modules/Users/infrastructure/repositories
 import { CreateUserUseCase } from "./modules/Users/services/createUser.usecase";
 import { GetAllUsersUseCase } from "./modules/Users/services/getAllUsers.usecase";
 import { GetUserByIdUseCase } from "./modules/Users/services/getUserById.usecase";
-import { FindUserByEmailUseCase } from "./modules/Users/services/findUserByEmail.usecase";
 import { UpdateUserByIdUseCase } from "./modules/Users/services/updateUser.usecase";
 import { DeleteUserByIdUseCase } from "./modules/Users/services/deleteUserById.usecase";
 
@@ -17,7 +16,6 @@ const userRepository = new UserMongoRepository()
 export const createUserService = new CreateUserUseCase(userRepository)
 export const getUserByIdService = new GetUserByIdUseCase(userRepository)
 export const getAllUsersService = new GetAllUsersUseCase(userRepository)
-export const findUserByEmailService = new FindUserByEmailUseCase(userRepository)
 export const updateUserByIdService = new UpdateUserByIdUseCase(userRepository)
 export const deleteUserByIdService = new DeleteUserByIdUseCase(userRepository)
 
@@ -26,30 +24,6 @@ export const usersController = new ExpressUsersController({
   createUserService,
   getUserByIdService,
   getAllUsersService, 
-  findUserByEmailService,
   updateUserByIdService,
   deleteUserByIdService,
 })
-
-
-
-// TODO: User, Auth.. deberian estar en setups separados?
-//       O hay alguna manera mejor de disponer el codigo en este archivo?
-// ----------------- Auth -----------------  //
-
-// PROBLEMA: Cual es el equivalente a UserMongoRepository 
-//           que vive en /src/infrastructure/repositories/users.mongodb.ts
-//           pero de la Autenticacion?
-// RESPUESTA: Es auth.middleware.ts???
-/* 
-const authMiddleware = new 
-
-export const loginService = new LoginServiceUseCase()
-export const refreshService = new RefreshServiceUseCase()
-
-// Controlador
-export const authController = new AuthController(
-  loginService,
-  refreshService
-)
- */

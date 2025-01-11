@@ -4,7 +4,6 @@ import { UserRepository } from "../../../domain/repositories/users.repository";
 import { UserDB } from './users.schema.mongoose'
 import { GetAllUsersDTO } from "../../../domain/dtos/users.getAllDto";
 import { UpdatedUserDto } from "../../../domain/dtos/users.updateDto";
-import { FindUserByEmailDto } from "../../../domain/dtos/users.findByEmailDto";
 import { GetUserDTO } from "../../../domain/dtos/users.getByIdDto";
 
 export class UserMongoRepository implements UserRepository {
@@ -69,31 +68,7 @@ export class UserMongoRepository implements UserRepository {
     }
     
   }
-  async findUserByEmail(email: string): Promise<FindUserByEmailDto | undefined> {
-    try {
-      if (!email) {
-        throw new Error("Invalid email.");
-      }
-      // 1 Se hace fetch del usaurio, a la db de mongo.
-      const user = await UserDB.findById(email)
-      // 2 Se valida que exista usuario.
-      if (!user) {
-        throw new Error()
-      }
-      // 3 se construye el usuario 
-      // TODO: Esto no deberia usarse la interfaz del dto?
-      // TODO: Este armado de la entidad no deberia ir en el useCase?
-      const userEntity: FindUserByEmailDto = {
-        password: user.password,
-        email: user.email
-      }
-      // 4 Se retorna el usuario. 
-      return userEntity
-    } catch (error) {
-      console.error("Error: ", error) // TODO: a mejorar.
-    }
-  }
-  async updateUserById(id: string, user: UpdatedUserDto): Promise<User | undefined> {
+    async updateUserById(id: string, user: UpdatedUserDto): Promise<User | undefined> {
     try {
       // 1. Validar que el ID no sea nulo o vacío
       if (!id) {

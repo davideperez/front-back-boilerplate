@@ -1,7 +1,6 @@
 import { User } from '../../../Users/domain/entities/users.entity';
 import jwt from 'jsonwebtoken';
 
-
 export class GenerateAccessToken {
   private readonly accessTokenSecret = process.env.ACCESS_TOKEN_SECRET!;
   
