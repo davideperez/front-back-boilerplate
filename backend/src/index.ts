@@ -12,5 +12,3 @@ app.listen(port, () => {
   console.log('---------------------------')
   console.log(`🌎 Servidor corriendo en http://localhost:${port}`);
 });
-
-
