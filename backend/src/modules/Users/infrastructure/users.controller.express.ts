@@ -3,81 +3,69 @@
     Ej: Deserializa, convierte, si se sube archivo lo baja del request.
 */
 import { Request, Response } from 'express'
+import { SignUpUseCase } from '../services/singUpUser.usecase';
+import { LoginUseCase } from '../services/loginUser.usecase';
 import { GetUserByIdUseCase } from '../services/getUserById.usecase'
-import { CreateUserUseCase } from '../services/createUser.usecase';
 import { GetAllUsersUseCase } from '../services/getAllUsers.usecase';
 import { UpdateUserByIdUseCase } from '../services/updateUser.usecase';
 import { DeleteUserByIdUseCase } from '../services/deleteUserById.usecase';
-import { FindUserByEmailUseCase } from '../services/findUserByEmail.usecase';
-import { UserErrorFieldsMissing } from '../domain/errors/user.error.fieldsMissing';
-import { UsersCreateDto } from '../domain/dtos/users.createDto';
+import { z } from 'zod';
  
 export class ExpressUsersController {
-    // Propiedades
-
-    private readonly createUser: CreateUserUseCase
+  // Propiedades
+    private readonly signUpUser: SignUpUseCase
+    private readonly loginUser: LoginUseCase
     private readonly getUserByIdUseCase: GetUserByIdUseCase
     private readonly getAllUsers: GetAllUsersUseCase
-    private readonly findUserByEmail: FindUserByEmailUseCase
     private readonly updateUserById: UpdateUserByIdUseCase
     private readonly deleteUserById: DeleteUserByIdUseCase
   constructor (input: {
-      readonly createUserService: CreateUserUseCase,
+      readonly signUpService: SignUpUseCase,
+      readonly loginService: LoginUseCase,
       readonly getUserByIdService: GetUserByIdUseCase,
       readonly getAllUsersService: GetAllUsersUseCase,
-      readonly findUserByEmailService: FindUserByEmailUseCase,
       readonly updateUserByIdService: UpdateUserByIdUseCase,
       readonly deleteUserByIdService: DeleteUserByIdUseCase,
     }
   ) {
     // Propiedades en el objeto construido.
-    this.createUser = input.createUserService
+    this.signUpUser = input.signUpService
+    this.loginUser = input.loginService
     this.getUserByIdUseCase = input.getUserByIdService
     this.getAllUsers = input.getAllUsersService
-    this.findUserByEmail = input.findUserByEmailService
     this.updateUserById = input.updateUserByIdService
     this.deleteUserById = input.deleteUserByIdService
   }
-
-  httpAddNewUser = async (req: Request, res: Response): Promise<void> => {
-    try {
-      // 1 Se extrae el usuario del body http.
-      const user = req.body
-           
-      // 2 Se crea el usuario en la base de datos, de manera agnostica.
-
-      await this.createUser.execute(user) // Tipo pendiente??
-
-      /* if(!newUser) {
-        res.status(400).json({error: 'Error creating user'})
-        return
-      } */
-
-      // 3 Se devuelve el usuario creado. TODO: Hace falta devolverlo?
-      res.status(200).json({message: 'User created successfully'},)
+  httpSignUpUser = async (req: Request, res: Response): Promise<void> => {
+    // 1 Extraer el usuario del body http.
+    const user = req.body
     
+    // 2 Validar que el usuario tenga los atributos y tipos requeridos.
+    const userAttributes = z.object({
+      id: z.string().optional(),
+      firstName: z.string(),
+      lastName: z.string(),
+      email: z.string().email(),
+      password: z.string()
+    })
+
+    try {
+    // 3 Llamar al caso de uso para que cree el usuario en la db.
+      const newUser = await this.signUpUser.execute(userAttributes.parse(user))
+    
+   
+    // 5 Responder con un 201 y el usuario creado. TODO: Hace falta devolverlo?
+      console.log('users.controller.ts > httpSignUpUser > newUser: ', newUser)
+      res.status(201).json({message: 'User created successfully', newUser})
     } catch (err: any) {
-      let status: number;
-      let message: string;
-
-      if (err instanceof UserErrorFieldsMissing) {
-        console.error(`Error al crear el usuario: ${err.message} 💊`)  
-        status = 400;
-        message = err.message;
-      } else if (err instanceof Error) {
-        console.error(`Error al crear el usuario: ${err.message}`);  
-        status = 500;
-        message = err.message;
-      } else {
-        status = 500;
-        message = 'Unkown error';
-
-        
-      }
-      
-      res.status(status).json({error: message})
+      console.error(`Error al crear el usuario: ${err.message}`);  
+      res.status(500).json({error: err.message})
     }
   };
+
+  httpLoginUser = async (req: Request, res: Response): Promise<void> => {
+    
+  }
 
   httpGetAllUsers = async (req: Request, res: Response): Promise<void>  => {
     try {
@@ -105,7 +93,6 @@ export class ExpressUsersController {
 
   httpGetUser = async (req: Request, res: Response): Promise<void> => {
     try {
-      console.log('users.controller.ts > httpGetUser > req.params.id: ', req.params.id)
       // 1 Se extrae el id de la url.
       const userId = req.params.id;
 
@@ -126,41 +113,14 @@ export class ExpressUsersController {
         })
     }
   };
-
-  httpFindUserByEmail = async (req: Request, res: Response): Promise<void> => {
-    try {
-      console.log('users.controller.ts > httpFindUserByEmail > req.body: ', req.body)
-      console.log('users.controller.ts > httpFindUserByEmail > req.body.email: ', req.body.email)
-      // 1 Se extrae el id de la url.
-      const userEmail = req.body.email;
-
-      // 2 Se realiza el fetch a la db de manera agnostica.
-      const user = await this.findUserByEmail.execute(userEmail)
-
-      // 3 Se valida que exista el usuario.
-      if (!user) {
-        res.status(404).json({ error: 'User not found' });
-        return;
-      }
-
-      // 4 Se devuelve el usuario
-      res.status(200).json(user)
-    } catch (err: any) {
-        res.status(500).json({
-            error: err.message,
-        })
-    }
-  };
  
   httpUpdateUser = async (req: Request, res: Response): Promise<void> => {
     try {
       // 1 Se extrae el id de la url.
       const id = req.params.id
-      console.log('users.controller.ts > httpUpdateUser > req.params.id: ', req.params.id)
 
       // 2 Se extrae la data actualizada del body http.
       const updatedData = req.body
-      console.log('users.controller.ts > httpUpdateUser > req.params.id: ', req.body)
       
       // 3 Se hace fetch agnostico del usuario a actualizar.
       const existingUser = await this.getUserByIdUseCase.execute(id);

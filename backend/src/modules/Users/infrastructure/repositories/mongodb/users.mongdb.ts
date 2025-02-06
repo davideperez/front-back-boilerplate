@@ -1,25 +1,45 @@
-import { User } from "../../../domain/entities/users.entity";
-import { UsersCreateDto } from "../../../domain/dtos/users.createDto";
-import { UserRepository } from "../../../domain/repositories/users.repository";
 import { UserDB } from './users.schema.mongoose'
-import { GetAllUsersDTO } from "../../../domain/dtos/users.getAllDto";
-import { UpdatedUserDto } from "../../../domain/dtos/users.updateDto";
-import { FindUserByEmailDto } from "../../../domain/dtos/users.findByEmailDto";
+import { User } from "../../../domain/entities/users.entity";
+import { UserRepository } from "../../../domain/repositories/users.repository";
+
+import { UserCreateDto } from '../../../domain/dtos/users.createDto';
+import { UserCreateResponseDto } from '../../../domain/dtos/users.createResponseDto';
+
 import { GetUserDTO } from "../../../domain/dtos/users.getByIdDto";
 
+import { GetAllUsersDTO } from "../../../domain/dtos/users.getAllDto";
+
+import { FindUserByEmailDto } from "../../../domain/dtos/users.findByEmailDto";
+
+import { UpdatedUserDto } from "../../../domain/dtos/users.updateDto";
+
 export class UserMongoRepository implements UserRepository {
-  async createUser(user: UsersCreateDto): Promise<void> { // TODO: revisar este tipo.
-    try { 
-      // 1 Se instancia un nuevo usuario usando el schema de mongo.
+
+  async createUser(user: UserCreateDto): Promise<UserCreateResponseDto | null> { // TODO: revisar este tipo.
+    try {
+      // 1 Instanciar un nuevo usuario usando el schema de mongo y el user recibido.
       const newUser = new UserDB(user)
       
-      // 2 Se guarda el usuario en mongodb.
+     // 2 Validar que el usuario no exista.
+      const userExists = await this.findUserByEmail(newUser.email)
+      
+      if (userExists) {
+        throw new Error('El usuario ya existe')
+      }
+
+      // 3 Guardar el usuario en mongodb.
       await newUser.save()
+      
+      // 4.1 Retornar el usuario.
+      return newUser
+      
     } catch (error) {
       console.error('No se pudo crear el usuario.', error)
+      // 4.2 Retornar null si no se pudo crear el usuario.
+      return null
     } 
   }
-  async getAllUsers(page: number, items: number, search: string): Promise<GetAllUsersDTO | undefined> {
+    async getAllUsers(page: number, items: number, search: string): Promise<GetAllUsersDTO | null> {
     try {
       const query: {[key: string]: any} = {};
       
@@ -43,7 +63,7 @@ export class UserMongoRepository implements UserRepository {
       throw new Error("Error fetching the users."); // TODO: mejorar estos errores.
     }
   }
-  async getUserById(id: string): Promise<GetUserDTO | undefined> {
+  async getUserById(id: string): Promise<GetUserDTO | null> {
     try {
       if (!id) {
         throw new Error("Invalid ID.");
@@ -66,14 +86,15 @@ export class UserMongoRepository implements UserRepository {
       return userEntity
     } catch (error) {
       console.error("Error: ", error) // TODO: a mejorar.
+      return null
     }
     
   }
-  async findUserByEmail(email: string): Promise<FindUserByEmailDto | undefined> {
+  async findUserByEmail(email: string): Promise<FindUserByEmailDto | null> {
+    if (!email) {
+      throw new Error("Invalid email.");
+    }
     try {
-      if (!email) {
-        throw new Error("Invalid email.");
-      }
       // 1 Se hace fetch del usaurio, a la db de mongo.
       const user = await UserDB.findById(email)
       // 2 Se valida que exista usuario.
@@ -91,9 +112,10 @@ export class UserMongoRepository implements UserRepository {
       return userEntity
     } catch (error) {
       console.error("Error: ", error) // TODO: a mejorar.
+      return null
     }
   }
-  async updateUserById(id: string, user: UpdatedUserDto): Promise<User | undefined> {
+  async updateUserById(id: string, user: UpdatedUserDto): Promise<User | null> {
     try {
       // 1. Validar que el ID no sea nulo o vacío
       if (!id) {

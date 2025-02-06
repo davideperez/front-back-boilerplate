@@ -4,7 +4,7 @@ import { Button } from './components/ui/button';
 
 const App: React.FC = () => {
   return (
-  <div className="m-6 font-mono">
+  <div className="m-6 font-mono ba">
     <h1 className="text-3xl font-bold underline">Hello, React + Vite + TypeScript!</h1>
     <Button>Presione aquí</Button>
   </div>

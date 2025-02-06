@@ -8,7 +8,7 @@ export class GetUserByIdUseCase {
     this.repository = repository
   }
 
-  async execute(id: string):Promise<GetUserDTO | undefined> {
+  async execute(id: string):Promise<GetUserDTO | null> {
     const user = await this.repository.getUserById(id)
     
     return user

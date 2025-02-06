@@ -3,8 +3,8 @@ import { usersController } from '../../../setup';
 
 const usersRouter = express.Router()
 
-// Create
-usersRouter.post('/', usersController.httpAddNewUser);
+// SignUp
+usersRouter.post('/', usersController.httpSignUpUser);
 
 // Read
 usersRouter.get('/:id', usersController.httpGetUser);
@@ -15,5 +15,7 @@ usersRouter.put('/:id', usersController.httpUpdateUser);
 
 // Delete
 usersRouter.delete('/:id', usersController.httpDeleteUser);
+
+usersRouter.post('/login', usersController.httpLoginUser);
 
 export default usersRouter;

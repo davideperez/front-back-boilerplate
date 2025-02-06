@@ -1,15 +1,11 @@
-import { z } from 'zod'
+import { z } from "zod"
 
-export interface UserCreateDto {
-  firstName: string,
-  lastName: string,
+export interface UserLoginDto {
   email: string,
   password: string,
 }
 
-export const UserCreateDtoSchema = z.object({
-  firstName: z.string(),
-  lastName: z.string(),
+export const UserLoginDtoSchema = z.object({
   email: z.string().email(),
   password: z
     .string()
@@ -17,5 +13,5 @@ export const UserCreateDtoSchema = z.object({
     .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
     .regex(/[a-z]/, "Password must contain at least one lowercase letter")
     .regex(/\d/, "Password must contain at least one number")
-})
+ })
 

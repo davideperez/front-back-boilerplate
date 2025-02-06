@@ -8,7 +8,7 @@ export class GetAllUsersUseCase {
     this.repository = repository
   }
 
-  async execute(page: number, items: number, search: string):Promise<GetAllUsersDTO | undefined> {
+  async execute(page: number, items: number, search: string):Promise<GetAllUsersDTO | null> {
     const allUser = await this.repository.getAllUsers(page, items, search)
     return allUser
   }
