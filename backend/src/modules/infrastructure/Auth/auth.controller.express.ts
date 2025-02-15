@@ -2,27 +2,35 @@ import { Request, Response } from 'express';
 
 import { z } from 'zod';
 
-import { UserSignUpResponseDto } from '../../domain/dtos/Auth/users.signUpResponseDto';
+import { SignUpResponseDto } from '../../domain/dtos/Auth/signUp.DTO';
 import { SignUpUseCase } from '../../services/Auth/singUpUser.usecase';
 import { LoginUseCase } from '../../services/Auth/loginUser.usecase';
 import { GetMeUseCase } from '../../services/Auth/getMe.usecase';
+import { LogoutUseCase } from '../../services/Auth/logoutUser.usecase';
+import { GetUserByIdUseCase } from '../../services/User/getUserById.usecase';
 
 export class ExpressAuthController {
 
   private readonly signUpUser: SignUpUseCase
   private readonly loginUser: LoginUseCase
   private readonly getMe: GetMeUseCase
+  private readonly logout: LogoutUseCase
+  private readonly getUserByIdService: GetUserByIdUseCase
 
   constructor (input: {
     readonly signUpService: SignUpUseCase,
     readonly loginService: LoginUseCase,
-    readonly getMeService: GetMeUseCase
+    readonly getMeService: GetMeUseCase,
+    readonly logoutService: LogoutUseCase,
+    readonly getUserByIdService: GetUserByIdUseCase
   } 
 
   ) {
     this.signUpUser = input.signUpService
     this.loginUser = input.loginService
     this.getMe = input.getMeService
+    this.logout = input.logoutService
+    this.getUserByIdService = input.getUserByIdService
   }
 
   httpSignUpUser = async (req: Request, res: Response): Promise<void> => {
@@ -42,7 +50,7 @@ export class ExpressAuthController {
 
     // 3 Llamar al caso de uso para que cree el usuario en la db.
     try {
-      const newUser: UserSignUpResponseDto = await this.signUpUser.execute(validatedUser)
+      const newUser: SignUpResponseDto = await this.signUpUser.execute(validatedUser)
   
     // 4 Responder con un 201 y el usuario creado. TODO: Hace falta devolverlo?
       console.log('users.controller.ts > httpSignUpUser > newUser: ', newUser)
@@ -51,7 +59,7 @@ export class ExpressAuthController {
       console.error(`Error al registrarse ${err.message}`);  
       res.status(500).json({error: "Error al registrarse"})
     }
-  };
+  }
 
   httpLoginUser = async (req: Request, res: Response): Promise<void> => {
     
@@ -78,7 +86,7 @@ export class ExpressAuthController {
     // 3 Calls the login useCase to get the tokens.
       const loginResponse = await this.loginUser.execute(validatedLoginData)
 
-      // 5 Send the Refresh Token via secure cookie.
+    // 4 Send the Refresh Token via secure cookie.
       const { refreshToken, accessToken } = loginResponse
 
       const isProduction = process.env.NODE_ENV === "production";
@@ -92,7 +100,7 @@ export class ExpressAuthController {
       });
       console.log("httpLoginUser > req.cookies: ", req.cookies)
     
-      // 6 Send the Access Token.
+    // 5 Send the Access Token.
       console.log('users.controller.ts > httpLoginUser > loginReponse: ', loginResponse)
       res.status(200).json({message: 'User created successfully', accessToken: accessToken})
     } catch (err: any) {
@@ -110,10 +118,10 @@ export class ExpressAuthController {
     const validId = idField.parse(id)
 
     try {
-      // 3 Call the getUserById useCase to get the user
-      const  user = await this.getUserByIdUseCase.execute(validId)
+    // 3 Call the getUserById useCase to get the user
+      const  user = await  this.getUserByIdService.execute(validId)
 
-      // 4 Send the user    
+    // 4 Send the user    
       res.status(200).json({message: "User data retrieved successfully", user})
     } catch (err: any) {
       console.error(`Error fetching user data: ${err.message}`);  

@@ -15,6 +15,7 @@ import { LogoutUseCase } from "./modules/services/Auth/logoutUser.usecase";
 
 // ---------------- Users ----------------  //
 
+
 // Repositorio (Domain)
 const userRepository = new UserMongoRepository()
 
@@ -40,13 +41,17 @@ export const usersController = new ExpressUsersController({
 
 export const loginService = new LoginUseCase(updateUserByIdService, findUserByEmailService)
 export const signUpService = new SignUpUseCase(userRepository)
-export const getMeService = new GetMeUseCase(getUserByIdService)
-export const logoutService = new LogoutUseCase(getUserByIdService)
+export const getMeService = new GetMeUseCase(getUserByIdService) // TODO: Is this interdependence between the Auth and User Model ok?
+export const logoutService = new LogoutUseCase(/* getUserByIdService */)
+
 
 // Controlador (Infrastructure)
+
+
 export const authController = new ExpressAuthController({
   signUpService,
   loginService,
   getMeService,
-  logoutService
+  logoutService, 
+  getUserByIdService
 })

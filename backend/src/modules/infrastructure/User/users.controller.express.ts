@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 
-import { UserSignUpResponseDto } from '../../domain/dtos/Auth/users.signUpResponseDto';
+import { SignUpResponseDto } from '../../domain/dtos/Auth/signUp.DTO';
 
 import { GetUserByIdUseCase } from '../../services/User/getUserById.usecase';
 import { FindUserByEmailUseCase } from '../../services/User/findUserByEmail.usecase';

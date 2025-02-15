@@ -1,7 +1,6 @@
 // Es un adapter, es un proxy que encapsula una implementacion
-import { UserRepository } from '../domain/repositories/users.repository'
-import { UserSignUpResponseDto } from '../../domain/dtos/Auth/users.signUpResponseDto'
-import { UserSignUpDto, UserSignUpDtoSchema } from '../../domain/dtos/Auth/users.signUpDto'
+import { UserRepository } from '../../domain/repositories/User/user.repository'
+import { SignUpDto, SignUpDtoSchema, SignUpResponseDto } from '../../domain/dtos/Auth/signUp.DTO'
 import { Error } from 'mongoose'
 import { PasswordHasher } from '../../infrastructure/Auth/passwordHasher'
 
@@ -13,10 +12,10 @@ export class SignUpUseCase {
     this.repository = repository
   }
 
-  async execute(user: UserSignUpDto): Promise<UserSignUpResponseDto>  { // TODO: revisar si agregar el null.
+  async execute(user: SignUpDto): Promise<SignUpResponseDto>  { // TODO: revisar si agregar el null.
     
     // 1 Validar que el user tenga todas los atributos con zod.
-    const userSchema = UserSignUpDtoSchema.safeParse(user)
+    const userSchema = SignUpDtoSchema.safeParse(user)
     
     if (!userSchema.success) {
       console.error('Validation errors: ', userSchema.error.issues);
@@ -45,7 +44,7 @@ export class SignUpUseCase {
       }
 
        // 4 Crear la respuesta del usuario creado.
-       const newUserResponse: UserSignUpResponseDto = {
+       const newUserResponse: SignUpResponseDto = {
         firstName: newUser.firstName,
         lastName: newUser.lastName,
         email: newUser.email        

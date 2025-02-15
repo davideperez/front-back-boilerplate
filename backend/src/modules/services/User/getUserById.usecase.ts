@@ -1,5 +1,5 @@
 import { GetUserDTO } from '../../domain/dtos/User/users.getByIdDto'
-import { UserRepository } from '../domain/repositories/users.repository'
+import { UserRepository } from '../../domain/repositories/User/user.repository'
 
 export class GetUserByIdUseCase {
   private repository: UserRepository
