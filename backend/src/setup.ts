@@ -1,12 +1,17 @@
-import { ExpressUsersController } from "./modules/Users/infrastructure/users.controller.express";
-import { UserMongoRepository } from "./modules/Users/infrastructure/repositories/mongodb/users.mongdb";
+import { UserMongoRepository } from "./modules/infrastructure/User/users.mongdb";
 
-import { SignUpUseCase } from "./modules/Users/services/singUpUser.usecase";
-import { LoginUseCase } from "./modules/Users/services/loginUser.usecase";
-import { GetAllUsersUseCase } from "./modules/Users/services/getAllUsers.usecase";
-import { GetUserByIdUseCase } from "./modules/Users/services/getUserById.usecase";
-import { UpdateUserByIdUseCase } from "./modules/Users/services/updateUser.usecase";
-import { DeleteUserByIdUseCase } from "./modules/Users/services/deleteUserById.usecase";
+import { ExpressUsersController } from "./modules/infrastructure/User/users.controller.express";
+import { GetAllUsersUseCase } from "./modules/services/User/getAllUsers.usecase";
+import { GetUserByIdUseCase } from "./modules/services/User/getUserById.usecase";
+import { FindUserByEmailUseCase } from "./modules/services/User/findUserByEmail.usecase";
+import { UpdateUserByIdUseCase } from "./modules/services/User/updateUser.usecase";
+import { DeleteUserByIdUseCase } from "./modules/services/User/deleteUserById.usecase";
+
+import { ExpressAuthController } from "./modules/infrastructure/Auth/auth.controller.express";
+import { SignUpUseCase } from "./modules/services/Auth/singUpUser.usecase";
+import { LoginUseCase } from "./modules/services/Auth/loginUser.usecase";
+import { GetMeUseCase } from "./modules/services/Auth/getMe.usecase";
+import { LogoutUseCase } from "./modules/services/Auth/logoutUser.usecase";
 
 // ---------------- Users ----------------  //
 
@@ -14,19 +19,34 @@ import { DeleteUserByIdUseCase } from "./modules/Users/services/deleteUserById.u
 const userRepository = new UserMongoRepository()
 
 // Servicios (Aplication)
-export const signUpService = new SignUpUseCase(userRepository)
-export const loginService = new LoginUseCase(userRepository)
 export const getUserByIdService = new GetUserByIdUseCase(userRepository)
+export const findUserByEmailService = new FindUserByEmailUseCase(userRepository)
 export const getAllUsersService = new GetAllUsersUseCase(userRepository)
 export const updateUserByIdService = new UpdateUserByIdUseCase(userRepository)
 export const deleteUserByIdService = new DeleteUserByIdUseCase(userRepository)
 
 // Controlador (Infrastructure)
 export const usersController = new ExpressUsersController({
-  signUpService,
-  loginService,
   getUserByIdService,
+  findUserByEmailService,
   getAllUsersService, 
   updateUserByIdService,
   deleteUserByIdService,
+})
+
+// ---------------- Auth ----------------  //
+
+// Servicios (Aplication)
+
+export const loginService = new LoginUseCase(updateUserByIdService, findUserByEmailService)
+export const signUpService = new SignUpUseCase(userRepository)
+export const getMeService = new GetMeUseCase(getUserByIdService)
+export const logoutService = new LogoutUseCase(getUserByIdService)
+
+// Controlador (Infrastructure)
+export const authController = new ExpressAuthController({
+  signUpService,
+  loginService,
+  getMeService,
+  logoutService
 })

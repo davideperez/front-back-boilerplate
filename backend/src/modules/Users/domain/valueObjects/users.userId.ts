@@ -1,3 +1,0 @@
-interface UserId {
-  id: string
-}

@@ -1,16 +1,16 @@
-import express from 'express';
 import dotenv from 'dotenv';
+dotenv.config();
+import express from 'express';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
 
 import api from './api';
-import connectMongoDB from './modules/Users/infrastructure/repositories/mongodb/mongodb.client';
+import connectMongoDB from './connections/mongodb.client';
 
 // ---------------- Initial Setup ----------------  //
 
 // 1 Injects the enviroment variables
-dotenv.config();
 
 // 2 express server instantiation
 const app = express();
@@ -23,10 +23,12 @@ const whitelist = process.env.CORS_WHITELIST?.split(',') || [];
 
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+  
     // Si hay origin y esta incluido en la whitelist devuelve true.
     if (!origin || whitelist.includes(origin)) {
       callback(null, true);
-      // Sino devuelve un Err.
+  
+    // Sino devuelve un Err.
     } else {
       callback(new Error('Origen no permitido por CORS')); // Bloquear origen
     }
@@ -34,6 +36,7 @@ const corsOptions = {
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true, // Permitir cookies y encabezados de autorización
 };
+
 
 // -------------------- Uses --------------------  //
 

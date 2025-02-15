@@ -1,6 +1,6 @@
 import express from 'express';
 
-import usersRouter from './modules/Users/infrastructure/users.router';
+import usersRouter from './modules/infrastructure/User/users.router';
 
 const api = express.Router();
 
