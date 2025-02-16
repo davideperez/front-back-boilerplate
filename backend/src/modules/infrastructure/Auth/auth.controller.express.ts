@@ -98,13 +98,14 @@ export class ExpressAuthController {
         domain: isProduction ? "mydomain.com" : undefined, // TODO: Implement this when Refresh Token endpoint is ready.
         path: "/v1/users/refresh-token"
       });
+
       console.log("httpLoginUser > req.cookies: ", req.cookies)
     
     // 5 Send the Access Token.
       console.log('users.controller.ts > httpLoginUser > loginReponse: ', loginResponse)
       res.status(200).json({message: 'User created successfully', accessToken: accessToken})
     } catch (err: any) {
-      console.error(`Error al crear el usuario: ${err.message}`);  
+      console.error(`Error al loguear el usuario: ${err.message}`);  
       res.status(500).json({error: err.message})
     }
   }
@@ -138,3 +139,4 @@ export class ExpressAuthController {
     }
   }
 }
+

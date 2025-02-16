@@ -47,7 +47,6 @@ export const logoutService = new LogoutUseCase(/* getUserByIdService */)
 
 // Controlador (Infrastructure)
 
-
 export const authController = new ExpressAuthController({
   signUpService,
   loginService,
