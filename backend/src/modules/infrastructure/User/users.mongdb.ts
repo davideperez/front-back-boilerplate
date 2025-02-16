@@ -1,13 +1,13 @@
-import { User } from "../../domain/entities/User/user.entity";
-import { UserRepository } from "../../domain/repositories/User/user.repository";
+import { User } from "../../domain/User/entities/user.entity";
+import { UserRepository } from "../../domain/User/repositories/user.repository";
 import { UserDB } from './users.schema.mongoose'
 
-import { UserCreateDto } from '../../domain/dtos/User/users.createDto';
-import { UserCreateResponseDto } from '../../domain/dtos/User/users.createResponseDto';
-import { GetUserDTO } from "../../domain/dtos/User/users.getByIdDto";
-import { FindUserByEmailDto } from "../../domain/dtos/User/users.findByEmailDto";
-import { GetAllUsersDTO } from "../../domain/dtos/User/users.getAllDto";
-import { UpdatedUserDto } from "../../domain/dtos/User/users.updateDto";
+import { UserCreateDto } from '../../domain/User/dtos/users.createDto';
+import { UserCreateResponseDto } from '../../domain/User/dtos/users.createResponseDto';
+import { GetUserDTO } from "../../domain/User/dtos/users.getByIdDto";
+import { FindUserByEmailDto } from "../../domain/User/dtos/users.findByEmailDto";
+import { GetAllUsersDTO } from "../../domain/User/dtos/users.getAllDto";
+import { UpdatedUserDto } from "../../domain/User/dtos/users.updateDto";
 
 export class UserMongoRepository implements UserRepository {
 

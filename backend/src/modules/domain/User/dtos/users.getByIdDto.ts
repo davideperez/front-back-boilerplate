@@ -1,4 +1,4 @@
-import { User } from "../../entities/User/user.entity";
+import { User } from "../entities/user.entity";
 
 export interface GetUserDTO extends Partial<User> {
   firstName?: string;

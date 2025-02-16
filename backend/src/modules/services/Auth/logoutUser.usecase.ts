@@ -1,7 +1,7 @@
 // Es un adapter, es un proxy que encapsula una implementacion
 import { Error } from 'mongoose'
 import { GetUserByIdUseCase } from '../User/getUserById.usecase'
-import { LogoutResponseDto } from '../../domain/dtos/Auth/logout.DTO'
+import { LogoutResponseDto } from '../../domain/Auth/dtos/logout.DTO'
 
 // El caso de uso es llamdo por el controlador, para registrar un usuario.
 export class LogoutUseCase {

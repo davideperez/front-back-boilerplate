@@ -1,4 +1,4 @@
-import { User } from "../../entities/User/user.entity";
+import { User } from "../entities/user.entity";
 
 export interface UpdatedUserDto extends Partial<User> { // TODO: Esta ok esto?
   firstName?: string;

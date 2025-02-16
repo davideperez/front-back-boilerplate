@@ -1,9 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import express from 'express';
+import cookieParser from "cookie-parser";
 import morgan from 'morgan';
 import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
+
 
 import api from './api';
 import connectMongoDB from './connections/mongodb.client';
@@ -55,6 +57,10 @@ if (process.env.NODE_ENV === 'production') {
 
 // 4 Parses incoming requests to json
 app.use(express.json());
+
+// 5 
+
+app.use(cookieParser())
 
 // --------------- DB connection ---------------  //
 

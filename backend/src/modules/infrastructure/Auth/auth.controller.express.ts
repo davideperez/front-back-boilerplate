@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 
 import { z } from 'zod';
 
-import { SignUpResponseDto } from '../../domain/dtos/Auth/signUp.DTO';
+import { SignUpResponseDto } from '../../domain/Auth/dtos/signUp.DTO';
 import { SignUpUseCase } from '../../services/Auth/singUpUser.usecase';
 import { LoginUseCase } from '../../services/Auth/loginUser.usecase';
 import { GetMeUseCase } from '../../services/Auth/getMe.usecase';

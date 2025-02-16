@@ -1,6 +1,6 @@
 // Es un adapter, es un proxy que encapsula una implementacion
-import { LoginDto , LoginDtoSchema } from '../../domain/dtos/Auth/login.DTO'
-import { LoginResponseDto } from '../../domain/dtos/Auth/login.DTO'
+import { LoginDto , LoginDtoSchema } from '../../domain/Auth/dtos/login.DTO'
+import { LoginResponseDto } from '../../domain/Auth/dtos/login.DTO'
 import { UpdateUserByIdUseCase } from '../User/updateUser.usecase'
 
 import { Error } from 'mongoose'

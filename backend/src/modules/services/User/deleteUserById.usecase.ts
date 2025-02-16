@@ -1,5 +1,5 @@
-import { User } from '../../domain/entities/User/user.entity';
-import { UserRepository } from '../../domain/repositories/User/user.repository'
+import { User } from '../../domain/User/entities/user.entity';
+import { UserRepository } from '../../domain/User/repositories/user.repository'
 
 export class DeleteUserByIdUseCase {
   private repository: UserRepository;

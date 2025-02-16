@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { User } from '../../domain/entities/User/user.entity'
+import { User } from '../../domain/User/entities/user.entity'
 
 const Schema = mongoose.Schema
 

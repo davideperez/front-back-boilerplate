@@ -1,5 +1,5 @@
-import { UserRepository } from '../../domain/repositories/User/user.repository';
-import { UpdatedUserDto } from '../../domain/dtos/User/users.updateDto';
+import { UserRepository } from '../../domain/User/repositories/user.repository';
+import { UpdatedUserDto } from '../../domain/User/dtos/users.updateDto';
 
 export class UpdateUserByIdUseCase {
   repository: UserRepository;
