@@ -2,7 +2,7 @@
 import { UserRepository } from '../../domain/User/repositories/user.repository'
 import { SignUpDto, SignUpDtoSchema, SignUpResponseDto } from '../../domain/Auth/dtos/signUp.DTO'
 import { Error } from 'mongoose'
-import { PasswordHasher } from '../../infrastructure/Auth/passwordHasher'
+import { PasswordHasher } from '../../infrastructure/Auth/utils/passwordHasher'
 
 // El caso de uso es llamdo por el controlador, para registrar un usuario.
 export class SignUpUseCase {

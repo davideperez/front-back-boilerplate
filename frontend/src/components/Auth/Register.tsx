@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const Register = () => {
+export const Register = () => { // TODO: Refactorizar.
 
   const [form, setForm] = useState({
     name: "",

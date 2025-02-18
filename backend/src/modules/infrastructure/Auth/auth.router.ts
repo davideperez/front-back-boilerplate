@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticateToken } from './authenticateToken';
+import { authenticateToken } from './utils/authenticateToken';
 import { authController } from '../../../setup';
 
 const authRouter = express.Router()

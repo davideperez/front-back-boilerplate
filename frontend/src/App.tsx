@@ -1,19 +1,22 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
-import { Register } from './components/Register';
-import { Home } from './components/Home';
+import { Register } from './components/Auth/Register';
+import { Login } from './components/Auth/Login';
+import { Home } from './components/Main/Home';
 
 const App: React.FC = () => {
   return (
-    <Router>
+    <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        // Redirects to the home page if route does not exist.
-        <Route path="*" element={<Navigate to="/" />} />
+        {/* Public Routes */}
+        <Route path="register" element={<Register />}/>
+        <Route path="login" element ={<Login />} />
+        
+        {/* Protected Routes */}
+        <Route path="/" element ={<Home />} />
       </Routes>
-    </Router>
+    </BrowserRouter>
 )};
 
 export default App;

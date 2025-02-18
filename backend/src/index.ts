@@ -10,7 +10,7 @@ import cors, { CorsOptions } from 'cors';
 import api from './api';
 import connectMongoDB from './connections/mongodb.client';
 
-// ---------------- Initial Setup ----------------  //
+// ---------------- 1 Initial Setup ----------------  //
 
 // 1 Injects the enviroment variables
 
@@ -32,15 +32,15 @@ const corsOptions = {
   
     // Sino devuelve un Err.
     } else {
-      callback(new Error('Origen no permitido por CORS')); // Bloquear origen
+      callback(new Error('Origen no permitido por CORS'));
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true, // Permitir cookies y encabezados de autorización
+  credentials: true, // Allows cookies and Auth headers.
 };
 
 
-// -------------------- Uses --------------------  //
+// -------------------- 2 Uses --------------------  //
 
 // 1 Cors
 app.use(cors(corsOptions));
@@ -58,19 +58,19 @@ if (process.env.NODE_ENV === 'production') {
 // 4 Parses incoming requests to json
 app.use(express.json());
 
-// 5 
+// 5 Cookie parser.
 
 app.use(cookieParser())
 
-// --------------- DB connection ---------------  //
+// --------------- 3 DB connection ---------------  //
 
 connectMongoDB()
 
-// ------------------ Routes ------------------  //
+// ------------------ 4 Routes ------------------  //
 
 app.use('/v1', api);
 
-// --------------- Server Start ---------------  //
+// --------------- 5 Server Start ---------------  //
 
 app.listen(port, () => {
   console.log('---------------------------')
@@ -80,5 +80,3 @@ app.listen(port, () => {
   console.log('---------------------------')
   console.log(`🌎 Servidor corriendo en http://localhost:${port}`);
 });
-
-

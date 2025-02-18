@@ -4,8 +4,8 @@ import { LoginResponseDto } from '../../domain/Auth/dtos/login.DTO'
 import { UpdateUserByIdUseCase } from '../User/updateUser.usecase'
 
 import { Error } from 'mongoose'
-import { PasswordHasher } from '../../infrastructure/Auth/passwordHasher'
-import { JwtUtil } from '../../infrastructure/Auth/jwt.util'
+import { PasswordHasher } from '../../infrastructure/Auth/utils/passwordHasher'
+import { JwtUtil } from '../../infrastructure/Auth/utils/jwt.util'
 import { FindUserByEmailUseCase } from '../User/findUserByEmail.usecase'
 
 // El caso de uso es llamdo por el controlador, para registrar un usuario.
