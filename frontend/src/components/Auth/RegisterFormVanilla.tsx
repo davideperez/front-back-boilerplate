@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const Register = () => { // TODO: Refactorizar.
+export const RegisterForm = () => { // TODO: Refactorizar.
 
   const [form, setForm] = useState({
     name: "",
@@ -12,7 +12,7 @@ export const Register = () => { // TODO: Refactorizar.
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   setForm({
     ...form,
-    [e.target.name]: e.target.value
+    [e.target.name]: e.target.valueAsDate
   })
 }
 
@@ -86,4 +86,4 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
       </div>
     </div>
   )
-}
+} 
