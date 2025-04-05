@@ -1,9 +1,14 @@
 // import { RegisterFormReactHookForm } from "@/components/Auth/RegisterFormReactHookForm";
-import { RegisterFormShadCN } from "@/components/Auth/RegisterFormShadCN";
+import { RegisterForm } from "@/components/Auth/RegisterForm";
+import { useNavigate } from "react-router-dom";
 
 export function RegisterPage() {
+    const navigate = useNavigate()
+
+    const handleSubmit = () => {
+        navigate('/login')
+    }
     return (
-        <RegisterFormShadCN />
-        // <RegisterFormReactHookForm />
+        <RegisterForm onSuccess={handleSubmit} />
     )
 }

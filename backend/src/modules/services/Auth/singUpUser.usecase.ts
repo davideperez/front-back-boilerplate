@@ -1,8 +1,10 @@
 // Es un adapter, es un proxy que encapsula una implementacion
-import { UserRepository } from '../../domain/User/repositories/user.repository'
-import { SignUpDto, SignUpDtoSchema, SignUpResponseDto } from '../../domain/Auth/dtos/signUp.DTO'
 import { Error } from 'mongoose'
+
+import { SignUpDto, SignUpDtoSchema, SignUpResponseDto } from '../../domain/Auth/dtos/signUp.DTO'
 import { PasswordHasher } from '../../infrastructure/Auth/utils/passwordHasher'
+
+import { UserRepository } from '../../domain/User/repositories/user.repository'
 
 // El caso de uso es llamdo por el controlador, para registrar un usuario.
 export class SignUpUseCase {
@@ -23,7 +25,7 @@ export class SignUpUseCase {
     }
 
     // 2 Validar que el usuario no exista.
-    const userExists = await this.repository.findUserByEmail(userSchema.data.email)
+    const userExists = await this.repository.userExists(userSchema.data.email)
 
     if (userExists) {
       throw new Error('El usuario ya existe')

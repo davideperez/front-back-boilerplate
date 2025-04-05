@@ -57,7 +57,7 @@ export class ExpressAuthController {
       res.status(201).json({message: 'User created successfully', newUser})
     } catch (err: any) {
       console.error(`Error al registrarse ${err.message}`);  
-      res.status(500).json({error: "Error al registrarse"})
+      res.status(500).json({error: "Error al registrarse: " + err.message})
     }
   }
 

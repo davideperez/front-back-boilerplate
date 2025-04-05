@@ -8,6 +8,7 @@ import { GetUserDTO } from "../../domain/User/dtos/users.getByIdDto";
 import { FindUserByEmailDto } from "../../domain/User/dtos/users.findByEmailDto";
 import { GetAllUsersDTO } from "../../domain/User/dtos/users.getAllDto";
 import { UpdatedUserDto } from "../../domain/User/dtos/users.updateDto";
+import { z } from "zod";
 
 export class UserMongoRepository implements UserRepository {
 
@@ -17,7 +18,7 @@ export class UserMongoRepository implements UserRepository {
       const newUser = new UserDB(user)
       
      // 2 Validar que el usuario no exista.
-      const userExists = await this.findUserByEmail(newUser.email)
+      const userExists = await this.userExists(newUser.email)
       
       if (userExists) {
         throw new Error('El usuario ya existe')
@@ -89,6 +90,32 @@ export class UserMongoRepository implements UserRepository {
     }
     
   }
+
+  async userExists(email: string): Promise<boolean> {
+    try {
+      // 1 Validate that the email is not null or empty // TODO: Does this validation belong here?
+      
+      const emailValidation = z.string().email().safeParse(email)
+      
+      if (!emailValidation.success) {
+        throw new Error("Invalid email.");
+      }
+
+      // 2 Fetches the user from the database.
+      const user = await UserDB.findOne({ email })
+      
+      // 3 Validates that the user exists.
+      if (!user) {
+        return false
+      }
+
+      return true
+    } catch (error) {
+      console.error("Error verifying user: ", error) // TODO: a mejorar.
+      return false
+    }
+  }
+
   async findUserByEmail(email: string): Promise<FindUserByEmailDto | null> {
     if (!email) {
       throw new Error("Invalid email.");
@@ -100,7 +127,7 @@ export class UserMongoRepository implements UserRepository {
       
       // 2 Se valida que exista usuario.
       if (!user) {
-        throw new Error()
+        throw new Error("")
       }
       
       // 3 se construye el usuario 
@@ -120,6 +147,7 @@ export class UserMongoRepository implements UserRepository {
       return null
     }
   }
+
   async updateUserById(id: string, user: UpdatedUserDto): Promise<User | null> {
     try {
       // 1 Validar que el ID no sea nulo o vacío

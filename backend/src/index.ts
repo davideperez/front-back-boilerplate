@@ -25,7 +25,7 @@ const whitelist = process.env.CORS_WHITELIST?.split(',') || [];
 
 const corsOptions = {
   origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-    console.log('___________________________index.ts > origin: ', origin);
+    console.log('-----------------------------> index.ts > origin: ', origin);
     // Si hay origin y esta incluido en la whitelist devuelve true.
     if (!origin || whitelist.includes(origin)) {
       callback(null, true);

@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 import { RegisterPage } from './pages/RegisterPage';
-import { Login } from './components/Auth/Login';
+import { LoginPage } from './pages/LoginPage';
 import { Home } from './components/Main/Home';
 import { ThemeProvider } from './components/ui/theme-provider';
 
@@ -13,7 +13,7 @@ const App: React.FC = () => {
         <Routes>
           {/* Public Routes */}
           <Route path="register" element={<RegisterPage />}/>
-          <Route path="login" element ={<Login />} />
+          <Route path="login" element ={<LoginPage />} />
           
           {/* Protected Routes */}
           <Route path="/" element ={<Home />} />
