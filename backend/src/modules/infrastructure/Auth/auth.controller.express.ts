@@ -81,33 +81,34 @@ export class ExpressAuthController {
       })
       
       const validatedLoginData = loginFields.parse(loginData)
+      
       try {
+        
+        // 3 Calls the login useCase to get the tokens.
+        const loginResponse = await this.loginUser.execute(validatedLoginData)
+
+        // 4 Send the Refresh Token via secure cookie.
+        const { refreshToken, accessToken } = loginResponse
+
+        const isProduction = process.env.NODE_ENV === "production";
+        
+        res.cookie("refreshToken", refreshToken, {
+          httpOnly: true, 
+          secure: isProduction,
+          sameSite: isProduction ? "strict" : "lax", 
+          domain: isProduction ? "mydomain.com" : undefined, // TODO: Implement this when Refresh Token endpoint is ready.
+          path: "/v1/users/refresh-token"
+        });
+
+        console.log("httpLoginUser > req.cookies: ", req.cookies)
       
-    // 3 Calls the login useCase to get the tokens.
-      const loginResponse = await this.loginUser.execute(validatedLoginData)
-
-    // 4 Send the Refresh Token via secure cookie.
-      const { refreshToken, accessToken } = loginResponse
-
-      const isProduction = process.env.NODE_ENV === "production";
-      
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true, 
-        secure: isProduction,
-        sameSite: isProduction ? "strict" : "lax", 
-        domain: isProduction ? "mydomain.com" : undefined, // TODO: Implement this when Refresh Token endpoint is ready.
-        path: "/v1/users/refresh-token"
-      });
-
-      console.log("httpLoginUser > req.cookies: ", req.cookies)
-    
-    // 5 Send the Access Token.
-      console.log('users.controller.ts > httpLoginUser > loginReponse: ', loginResponse)
-      res.status(200).json({message: 'User created successfully', accessToken: accessToken})
-    } catch (err: any) {
-      console.error(`Error al loguear el usuario: ${err.message}`);  
-      res.status(500).json({error: err.message})
-    }
+        // 5 Send the Access Token.
+        console.log('users.controller.ts > httpLoginUser > loginReponse: ', loginResponse)
+        res.status(200).json({message: 'User created successfully', accessToken: accessToken})
+      } catch (err: any) {
+        console.error(`Error al loguear el usuario: ${err.message}`);  
+        res.status(500).json({error: err.message})
+      }
   }
 
   httpGetMe = async (req: Request, res: Response): Promise<void> => {
@@ -139,4 +140,3 @@ export class ExpressAuthController {
     }
   }
 }
-

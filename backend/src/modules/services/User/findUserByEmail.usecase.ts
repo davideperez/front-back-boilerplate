@@ -1,4 +1,4 @@
-import { FindUserByEmailDto } from '../../domain/User/dtos/users.findByEmailDto'
+import { FindUserByEmailDto } from '../../domain/User/dtos/read/users.findByEmailDto'
 import { UserRepository } from '../../domain/User/repositories/user.repository'
 
 export class FindUserByEmailUseCase {

@@ -1,4 +1,4 @@
-import { GetUserDTO } from '../../domain/User/dtos/users.getByIdDto'
+import { GetUserDTO } from '../../domain/User/dtos/read/users.getByIdDto'
 import { UserRepository } from '../../domain/User/repositories/user.repository'
 
 export class GetUserByIdUseCase {

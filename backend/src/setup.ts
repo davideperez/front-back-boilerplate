@@ -44,7 +44,6 @@ export const signUpService = new SignUpUseCase(userRepository)
 export const getMeService = new GetMeUseCase(getUserByIdService) // TODO: Is this interdependence between the Auth and User Model ok?
 export const logoutService = new LogoutUseCase(/* getUserByIdService */)
 
-
 // Controlador (Infrastructure)
 
 export const authController = new ExpressAuthController({

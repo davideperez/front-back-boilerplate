@@ -1,10 +1,10 @@
 import { User } from '../entities/user.entity'
-import { UserCreateDto } from '../dtos/users.createDto'
+import { UserCreateDto } from '../dtos/create/users.createDto'
 import { UpdatedUserDto } from '../dtos/users.updateDto'
 import { GetAllUsersDTO } from '../dtos/users.getAllDto'
 import { GetUserDTO } from '../dtos/users.getByIdDto'
-import { FindUserByEmailDto } from '../dtos/users.findByEmailDto'
-import { UserCreateResponseDto } from '../dtos/users.createResponseDto'
+import { FindUserByEmailDto } from '../dtos/read/users.findByEmailDto'
+import { UserCreateResponseDto } from '../dtos/create/users.createResponseDto'
 
 export interface UserRepository {
   createUser(user: UserCreateDto) : Promise<UserCreateResponseDto | null>,

@@ -22,3 +22,4 @@ export const UserSchema = z.object({
     .regex(/\d/, "Password must contain at least one number"), // TODO: Revisar si este error va en este nivel de la arquitectura.
   refreshTokens: z.string().array()
 })
+

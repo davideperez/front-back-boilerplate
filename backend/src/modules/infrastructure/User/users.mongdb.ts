@@ -1,14 +1,16 @@
+import { z } from "zod";
+
 import { User } from "../../domain/User/entities/user.entity";
 import { UserRepository } from "../../domain/User/repositories/user.repository";
 import { UserDB } from './users.schema.mongoose'
 
-import { UserCreateDto } from '../../domain/User/dtos/users.createDto';
-import { UserCreateResponseDto } from '../../domain/User/dtos/users.createResponseDto';
-import { GetUserDTO } from "../../domain/User/dtos/users.getByIdDto";
-import { FindUserByEmailDto } from "../../domain/User/dtos/users.findByEmailDto";
-import { GetAllUsersDTO } from "../../domain/User/dtos/users.getAllDto";
-import { UpdatedUserDto } from "../../domain/User/dtos/users.updateDto";
-import { z } from "zod";
+import { UserCreateDto } from '../../domain/User/dtos/create/users.createDto';
+import { UserCreateResponseDto } from '../../domain/User/dtos/create/users.createResponseDto';
+import { GetUserDTO } from "../../domain/User/dtos/read/users.getByIdDto";
+import { FindUserByEmailDto } from "../../domain/User/dtos/read/users.findByEmailDto";
+import { GetAllUsersDTO } from "../../domain/User/dtos/read/users.getAllDto";
+import { UpdatedUserDto } from "../../domain/User/dtos/update/users.updateDto";
+
 
 export class UserMongoRepository implements UserRepository {
 
@@ -122,25 +124,27 @@ export class UserMongoRepository implements UserRepository {
     }
     
     try {
-      // 1 Se hace fetch del usaurio, a la db de mongo.
+      // 1 Fetch the user from the database.
       const user = await UserDB.findOne({email})
       
-      // 2 Se valida que exista usuario.
+      // 2 Validate that the user exists.
       if (!user) {
         throw new Error("")
       }
       
-      // 3 se construye el usuario 
+      // 3 Build the user
       // TODO: Esto no deberia usarse la interfaz del dto?
-      // TODO: Este armado de la entidad no deberia ir en el useCase?
+      // TODO: Este armado de la entidad no deberia ir en el useCase? Y en todo caso 
       const userEntity: FindUserByEmailDto = {
         id: user._id.toString(),
+        firstName: user.firstName,
+        lastName: user.lastName,
         password: user.password,
         email: user.email,
         refreshTokens: user.refreshTokens
       }
       
-      // 4 Se retorna el usuario. 
+      // 4 Return the user.
       return userEntity
     } catch (error) {
       console.error("Error: ", error) // TODO: a mejorar.

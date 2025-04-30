@@ -1,20 +1,10 @@
 import { Request, Response } from 'express';
 
-import { SignUpResponseDto } from '../../domain/Auth/dtos/signUp.DTO';
-
 import { GetUserByIdUseCase } from '../../services/User/getUserById.usecase';
 import { FindUserByEmailUseCase } from '../../services/User/findUserByEmail.usecase';
 import { GetAllUsersUseCase } from '../../services/User/getAllUsers.usecase';
 import { UpdateUserByIdUseCase } from '../../services/User/updateUser.usecase';
 import { DeleteUserByIdUseCase } from '../../services/User/deleteUserById.usecase';
-
-import { LoginUseCase } from '../../services/Auth/loginUser.usecase';
-import { SignUpUseCase } from '../../services/Auth/singUpUser.usecase';
-
-import { z } from 'zod';
-import { userInfo } from 'node:os';
-import { getUserByIdService } from '../../../setup';
-import { GetMeUseCase } from '../../services/Auth/getMe.usecase';
 
 export class ExpressUsersController {
 

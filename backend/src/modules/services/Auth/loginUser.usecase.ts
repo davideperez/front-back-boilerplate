@@ -11,7 +11,7 @@ import { FindUserByEmailUseCase } from '../User/findUserByEmail.usecase'
 // El caso de uso es llamdo por el controlador, para registrar un usuario.
 export class LoginUseCase {
 
-  private UpdateUserByIdUseCase: UpdateUserByIdUseCase
+  private UpdateUserByIdUseCase: UpdateUserByIdUseCase 
   private FindUserByEmailUseCase: FindUserByEmailUseCase
 
   constructor (UpdateUserByIdUseCase: UpdateUserByIdUseCase, FindUserByEmailUseCase: FindUserByEmailUseCase) {
@@ -21,7 +21,7 @@ export class LoginUseCase {
 
   async execute(user: LoginDto): Promise<LoginResponseDto>  {
 
-    // 1 Validate the user attributes
+    // 1 Validate user inputted data
     const userSchema = LoginDtoSchema.safeParse(user)
 
     if (!userSchema.success) {
@@ -35,7 +35,7 @@ export class LoginUseCase {
     if (!userExists) {
       throw new Error('User not found.')
     }
-    
+
     // 3 Compare the passwords
     const { id, password } = userExists
     const autenticatedUser = await PasswordHasher.compare(user.password, password)
@@ -44,9 +44,19 @@ export class LoginUseCase {
       throw new Error('Wrong password.')
     }
 
+    // 4 Build the user
+
+    const userBuild = {
+      id: userExists.id,
+      firstName: userExists.firstName,
+      lastName: userExists.lastName,
+      email: userExists.email,
+    }
+
     // 4 Generate the Tokens
-    const accessToken = JwtUtil.generateAccessToken(userExists)
-    const refreshToken = JwtUtil.generateRefreshToken(userExists.id)
+    console.log('loginUser.usecase.ts > userExists: ', userExists)
+    const accessToken = JwtUtil.generateAccessToken(userBuild)
+    const refreshToken = JwtUtil.generateRefreshToken(userBuild.id)
     
     // 5 Save the refresh token to the db.
     userExists.refreshTokens.push(refreshToken)
