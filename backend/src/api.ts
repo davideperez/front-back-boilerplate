@@ -14,8 +14,7 @@ api.get('/', (req, res) => {
 api.use('/users', usersRouter);
 api.use('/auth', authRouter);
 api.use('/folders', (req, res, next) => {
-  console.log('Hi from folders router!');
   next();
-},foldersRouter);
+}, foldersRouter);
 
 export default api;

@@ -37,6 +37,7 @@ export const duplicateFolderData = {
 }
 
 export const missingFirstNameFolderData = { 
+    firstName: null,
     lastName: "Pérez",
     birthDate: "2010-05-15T00:00:00.000Z",
     profilePicture: "../assets/profile-picture-test-image.avif",

@@ -29,7 +29,6 @@ export class ExpressFoldersController {
     this.updateFolderByIdUseCase = input.updateFolderByIdUseCase
     this.deleteFolderByIdUseCase = input.deleteFolderByIdUseCase
   }
-
   httpGetFolderById = async (req: Request, res: Response): Promise<void> => {
     console.log('Hi from httpGetFolderById!')
     try {
@@ -59,7 +58,7 @@ export class ExpressFoldersController {
     console.log('Hi from httpGetAllFolders!')
     try {
     // 1 Extract the data
-
+    
     // 2 Validate the data
 
     // 3 Call the usecase. 
@@ -76,13 +75,11 @@ export class ExpressFoldersController {
       })
     }
   }
-
   httpCreateFolder = async (req: Request, res: Response): Promise<void> => {
     try {
         // 1 Extract the data
         const folderData = req.body;
         const folderDataImage = req.file?.buffer; // Get the image from the request
-        console.log('folderDataImage: ', folderDataImage)
 
         // 2 Complete the profilePicture property with the string of the Cloudinary URL, or null.
         if (folderDataImage) {
@@ -121,7 +118,6 @@ export class ExpressFoldersController {
             res.status(400).json({ error: 'Folder creation failed' }); // 400 Bad Request
             return;
         }
-
         // 6.1 Response
         res
             .status(201) // 201 Created
@@ -131,48 +127,48 @@ export class ExpressFoldersController {
         console.error(`Error creating Folder: ${err.message}`);
         res.status(500).json({error: err.message}) // 500 Internal Server Error
     }
-}
-    httpUpdateFolderById = async (req: Request, res: Response): Promise<void> => {
-        console.log('Hi from httpUpdateFolderById!')
-        try {
-        // 1 Extract the data
-        const folderId = req.params.id;
-        const folderData = req.body;
-    
-        // 2 Validate the data
-    
-        // 3 Call the usecase. 
-        const folder = await this.updateFolderByIdUseCase.execute(folderId, folderData)
-    
-        // 4 Handle usecase exception.
-    
-        // 5 Response
-        res.status(200).json(folder)
-        } catch (err: any) {
-        res.status(500).json({
-            error: err.message,
-        })
-        }
-    }
-    httpDeleteFolderById = async (req: Request, res: Response): Promise<void> => {
-        console.log('Hi from httpDeleteFolderById!')
-        try {
-        // 1 Extract the data
-        const folderId = req.params.id;
-    
-        // 2 Validate the data
-    
-        // 3 Call the usecase. 
-        await this.deleteFolderByIdUseCase.execute(folderId)
-    
-        // 4 Handle usecase exception.
-    
-        // 5 Response
-        res.status(204).send()
-        } catch (err: any) {
-        res.status(500).json({
-            error: err.message,
-        })
-        }
-    }
+  }
+  httpUpdateFolderById = async (req: Request, res: Response): Promise<void> => {
+      console.log('Hi from httpUpdateFolderById!')
+      try {
+      // 1 Extract the data
+      const folderId = req.params.id;
+      const folderData = req.body;
+
+      // 2 Validate the data
+
+      // 3 Call the usecase. 
+      const folder = await this.updateFolderByIdUseCase.execute(folderId, folderData)
+
+      // 4 Handle usecase exception.
+
+      // 5 Response
+      res.status(200).json(folder)
+      } catch (err: any) {
+      res.status(500).json({
+          error: err.message,
+      })
+      }
+  }
+  httpDeleteFolderById = async (req: Request, res: Response): Promise<void> => {
+      console.log('Hi from httpDeleteFolderById!')
+      try {
+      // 1 Extract the data
+      const folderId = req.params.id;
+  
+      // 2 Validate the data
+  
+      // 3 Call the usecase. 
+      await this.deleteFolderByIdUseCase.execute(folderId)
+  
+      // 4 Handle usecase exception.
+  
+      // 5 Response
+      res.status(204).send()
+      } catch (err: any) {
+      res.status(500).json({
+          error: err.message,
+      })
+      }
+  }
 }

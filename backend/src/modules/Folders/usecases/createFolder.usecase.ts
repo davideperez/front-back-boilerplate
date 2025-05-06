@@ -24,9 +24,8 @@ export class CreateFolderUseCase {
         } 
 
         const folderExists = await this.repository.folderExists(firstName, lastName)
-        console.log('folderExists', folderExists)
         if (folderExists) {
-            throw new Error('Ya existe una carpeta con el mismo nombre.')
+            throw new Error('Ya existe un legajo con el mismo nombre.')
         }
 
         // 2. Create the response of the folder created.

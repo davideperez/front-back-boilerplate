@@ -1,12 +1,16 @@
 import mongoose from 'mongoose';
 
-const connectMongoDB = async (): Promise<void> => {
+const connectMongoDB = async (dbName: string | undefined): Promise<void> => {
   try {
-    const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/my_database'; // Use environment variable or default
+    if (!dbName) {
+      throw new Error('Error: Provide a Database Name');
+    }
+    const mongoURI = `${process.env.MONGO_URI}/${dbName}`;
     await mongoose.connect(mongoURI);
-    console.log('🌿 MongoDB connected successfully');
-  } catch (error) {
-    console.error('⚠️ MongoDB connection error:', error);
+    console.log(`🛢🛢🛢🛢 MongoDB connected successfully to: ${dbName} database.`);
+  } catch (error: any) {
+    console.error('⚠️ MongoDB connection error:', error.message);
+    console.error(error.stack);
     process.exit(1); // Exit process with failure
   }
 };

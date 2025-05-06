@@ -4,7 +4,9 @@ import connectMongoDB from '../connections/mongodb.connection';
 import mongoose from 'mongoose';
 
 beforeAll(async () => {
-    await connectMongoDB();
+    const mongoURI = process.env.MONGO_NAME_TEST
+    await connectMongoDB(mongoURI);
+
     console.log('MongoDB connection established successfully!');
 });
 
