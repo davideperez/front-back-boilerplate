@@ -1,5 +1,5 @@
-{
-  "users": [
+const usersMock = {
+    "users": [
       {
           "_id": "67587ef6ec1700cdc529fa18",
           "firstName": "Peter",
