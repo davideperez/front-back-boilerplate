@@ -1,7 +1,8 @@
 import express from 'express';
 
-import usersRouter from './modules/infrastructure/User/users.router';
-import authRouter from './modules/infrastructure/Auth/auth.router';
+import usersRouter from './modules/Users/infrastructure/users.router';
+import authRouter from './modules/Auth/infrastructure/auth.router';
+import foldersRouter from './modules/Folders/infrastructure/folders.router';
 
 const api = express.Router();
 
@@ -12,6 +13,9 @@ api.get('/', (req, res) => {
 
 api.use('/users', usersRouter);
 api.use('/auth', authRouter);
-
+api.use('/folders', (req, res, next) => {
+  console.log('Hi from folders router!');
+  next();
+},foldersRouter);
 
 export default api;

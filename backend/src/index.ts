@@ -8,7 +8,7 @@ import cors, { CorsOptions } from 'cors';
 
 
 import api from './api';
-import connectMongoDB from './connections/mongodb.client';
+import connectMongoDB from './connections/mongodb.connection';
 
 // ---------------- 1 Initial Setup ----------------  //
 
@@ -32,6 +32,7 @@ const corsOptions = {
   
     // Sino devuelve un Err.
     } else {
+      console.error('Origen no permitido por CORS');
       callback(new Error('Origen no permitido por CORS'));
     }
   },
@@ -58,8 +59,20 @@ if (process.env.NODE_ENV === 'production') {
 app.use(express.json());
 
 // 5 Cookie parser.
-
 app.use(cookieParser())
+
+
+
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'uploads/'); // Store files in the "uploads" directory
+//   },
+//   filename: (req, file, cb) => {
+//     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9); // Generate a unique suffix for the file name
+//     cb(null, file.fieldname + '-' + uniqueSuffix + '-' + file.originalname); // Use the original file name and add a unique suffix
+//   }
+// });
+
 
 // --------------- 3 DB connection ---------------  //
 
@@ -68,6 +81,10 @@ connectMongoDB()
 // ------------------ 4 Routes ------------------  //
 
 app.use('/v1', api);
+app.get('/ping', (_req, res) => {
+  res.send('pong');
+});
+
 
 // --------------- 5 Server Start ---------------  //
 
@@ -78,4 +95,5 @@ app.listen(port, () => {
   console.log('Process ID: ', process.pid)
   console.log('---------------------------')
   console.log(`🌎 Servidor corriendo en http://localhost:${port}`);
+  console.log('---------------------------')
 });
