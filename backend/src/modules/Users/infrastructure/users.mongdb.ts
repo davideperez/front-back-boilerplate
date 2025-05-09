@@ -101,6 +101,7 @@ export class UserMongoRepository implements UserRepository {
       const emailValidation = z.string().email().safeParse(email)
       
       if (!emailValidation.success) {
+        //TODO: Esta validacion va en el controler!
         throw new Error("Invalid email.");
       }
 

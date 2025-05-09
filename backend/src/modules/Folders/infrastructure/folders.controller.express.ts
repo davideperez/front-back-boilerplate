@@ -1,11 +1,20 @@
 
 import { Request, Response } from 'express'
+
 import { GetFolderByIdUseCase } from '../usecases/getFolderById.usecase'
+
 import { GetAllFoldersUseCase } from '../usecases/getAllFolders.usecase'
+import { GetAllFoldersQuerySchema } from '../domain/dtos/read/getAllFoldersResponse.dto'
+
 import { CreateFolderUseCase } from '../usecases/createFolder.usecase'
+
 import { UpdateFolderByIdUseCase } from '../usecases/updateFolderById.usecase'
+
 import { DeleteFolderByIdUseCase } from '../usecases/deleteFolderById.usecase'
-import { FolderSchema } from '../domain/folders.entity'
+
+import { FolderIdSchema, UpdateFolderSchema } from '../domain/dtos/update/updateFolders.dto'
+
+import { Folder, FolderSchema } from '../domain/folders.entity'
 import { uploadImageToCloudinary } from '../../../connections/cloudinary.connection'
 
 export class ExpressFoldersController {
@@ -29,146 +38,217 @@ export class ExpressFoldersController {
     this.updateFolderByIdUseCase = input.updateFolderByIdUseCase
     this.deleteFolderByIdUseCase = input.deleteFolderByIdUseCase
   }
-  httpGetFolderById = async (req: Request, res: Response): Promise<void> => {
-    console.log('Hi from httpGetFolderById!')
-    try {
-      // 1 Extract the data
-      const folderId = req.params.id;
+    httpGetFolderById = async (req: Request, res: Response): Promise<void> => {
+        console.log('Hi from httpGetFolderById!')
+        try {
+            // 1 Extract the data
+            const folderId: string = req.params.id;
 
-      // 2 Validate the data
+            // 2 Validate the data
 
-      // 3 Call the usecase. 
-      const folder = await this.getFolderByIdUseCase.execute(folderId)
+            if(!folderId) {
+                res.status(400).json({ error: 'Folder Id is required' });
+            }
+            // 3 Call the usecase. 
+            const folder = await this.getFolderByIdUseCase.execute(folderId)
 
-      // 4 Handle usecase exception.
-      if (!folder) {
-        res.status(404).json({ error: 'Folder not found' });
-        return;
-      }
+            // 4 Handle usecase exception.
+            if (!folder) {
+                res.status(404).json({ error: 'Folder not found' });
+                return;
+            }
 
-      // 5 Response
-      res.status(200).json(folder)
-    } catch (err: any) {
-      res.status(500).json({
-          error: err.message,
-      })
+            // 5 Response
+            res.status(200).json(folder)
+        } catch (err: any) {
+            res.status(500).json({
+            error: err.message,
+        })
+        }
     }
-  }
-  httpGetAllFolders = async (req: Request, res: Response): Promise<void> => {
-    console.log('Hi from httpGetAllFolders!')
-    try {
-    // 1 Extract the data
-    
-    // 2 Validate the data
 
-    // 3 Call the usecase. 
-    const folders = await this.getAllFoldersUseCase.execute()
+    httpGetAllFolders = async (req: Request, res: Response): Promise<void> => {
+        console.log('Hi from httpGetAllFolders!')
+        try {
+            // 1 Validate the types of the Query.
+            console.log("This is the req.query: ", req.query)
 
-    // 4 Handle usecase exception.
+            const parsedQuery = GetAllFoldersQuerySchema.safeParse(req.query)
 
-    // 5 Response
-    res.status(200).json(folders)
+            console.log("This is the parsedQuery: ", parsedQuery.data )
+            // 1.1 Handle validation exception.
+            if (!parsedQuery.success) { 
+                res.status(422).json({ errors: parsedQuery.error.format()}); // 422 Unprocessable Entity
+                return;
+            }
 
-    } catch (err: any) {
-      res.status(500).json({
-          error: err.message,
-      })
+            // 2 Extract the data
+            const { search, sortBy, sortOrder, page, pageSize } = parsedQuery.data
+
+            // 3 Builds the pagination properties
+            const skip = (page - 1) * pageSize
+            const limit = pageSize
+
+            const foldersFromDBRequest = {
+                search: search,
+                sortBy: sortBy,
+                sortOrder: sortOrder,
+                skip: skip,
+                limit: limit,
+            }
+            // 4 Call the usecase
+            const queryResponse = await this.getAllFoldersUseCase.execute(foldersFromDBRequest)
+
+            // 4.1 Handle usecase exception.
+            if (!queryResponse?.folders) {
+                res.status(500).json({ error: 'Unexpected response: folders missing' });
+                return;
+            }
+
+            // 4.2 Handle empty folders exception.
+            if (queryResponse.folders.length === 0) {
+                res.status(404).json({ error: 'No folders found' });
+                return;
+            }
+
+            // 5 Build the response
+            const totalItemsCount = queryResponse.totalItemsCount
+
+            // Round the total pages up if the division gives you zero.
+            const totalPages = Math.ceil(totalItemsCount / pageSize)
+
+            // 6 Sends Response
+            res
+            .status(200)
+            .json({
+                message: 'Folders retrieved successfully.', 
+                items: queryResponse.folders,
+                pagination: {
+                    page: page,
+                    pageSize: pageSize,
+                    totalPages: totalPages,
+                    totalItems: queryResponse.totalItemsCount,
+                }
+            })
+        } catch (err: any) {
+            res
+            .status(500)
+            .json({error: err.message})
+        }
     }
-  }
-  httpCreateFolder = async (req: Request, res: Response): Promise<void> => {
-    try {
-        // 1 Extract the data
-        const folderData = req.body;
-        const folderDataImage = req.file?.buffer; // Get the image from the request
+    httpCreateFolder = async (req: Request, res: Response): Promise<void> => {
+        try {
+            // 1 Extract the data
+            const folderData = req.body;
+            const folderDataImage = req.file?.buffer; // Get the image from the request
 
-        // 2 Complete the profilePicture property with the string of the Cloudinary URL, or null.
-        if (folderDataImage) {
-            const imageUrl = await uploadImageToCloudinary(folderDataImage)
-            folderData.profilePicture = imageUrl
-        } else  {
-            folderData.profilePicture = null // Set to null if no image is provided 
+            // 2 Complete the profilePicture property with the string of the Cloudinary URL, or null.
+            if (folderDataImage) {
+                const imageUrl = await uploadImageToCloudinary(folderDataImage)
+                folderData.profilePicture = imageUrl
+            } else  {
+                folderData.profilePicture = null // Set to null if no image is provided 
+            }
+
+            // 3 Builds the placeOfBirth property
+            folderData.placeOfBirth = {
+                country: folderData.country,
+                state: folderData.state,
+                city: folderData.city,
+            }
+
+            // 4.1 Validate the data
+            const validatedFolderData = FolderSchema.safeParse(folderData)
+
+            // 4.2 Handle validation exception.
+            if (!validatedFolderData.success) {
+                res.status(422).json({ errors: validatedFolderData.error.format()}); // 422 Unprocessable Entity
+                return;
+            }
+
+            if (!folderDataImage) {
+                res.status(422).json({ error: 'Image is required' }); // 422 Unprocessable Entity
+                return;
+            }
+
+            // 5.1 Call the usecase. 
+            const newFolder = await this.createFolderUseCase.execute(validatedFolderData.data)
+
+            // 5.2 Handle usecase exception
+            if (!newFolder) {
+                res.status(400).json({ error: 'Folder creation failed' }); // 400 Bad Request
+                return;
+            }
+            // 6.1 Response
+            res
+                .status(201) // 201 Created
+                .json({
+                    message: 'Folder created successfully.', 
+                    data: newFolder
+                })
+            // 6.2 Handle unexpected exceptions.
+        } catch (err: any) {
+            console.error(`Error creating Folder: ${err.message}`);
+            res.status(500).json({error: err.message}) // 500 Internal Server Error
         }
-
-        // 3 Builds the placeOfBirth property
-        folderData.placeOfBirth = {
-            country: folderData.country,
-            state: folderData.state,
-            city: folderData.city,
-        }
-
-        // 4.1 Validate the data
-        const validatedFolderData = FolderSchema.safeParse(folderData)
-
-        // 4.2 Handle validation exception.
-        if (!validatedFolderData.success) {
-            res.status(422).json({ errors: validatedFolderData.error.format()}); // 422 Unprocessable Entity
-            return;
-        }
-
-        if (!folderDataImage) {
-            res.status(422).json({ error: 'Image is required' }); // 422 Unprocessable Entity
-            return;
-        }
-
-        // 5.1 Call the usecase. 
-        const newFolder = await this.createFolderUseCase.execute(validatedFolderData.data)
-    
-        // 5.2 Handle usecase exception
-        if (!newFolder) {
-            res.status(400).json({ error: 'Folder creation failed' }); // 400 Bad Request
-            return;
-        }
-        // 6.1 Response
-        res
-            .status(201) // 201 Created
-            .json({message: 'Folder created successfully: ', newFolder})
-        // 6.2 Handle unexpected exceptions.
-    } catch (err: any) {
-        console.error(`Error creating Folder: ${err.message}`);
-        res.status(500).json({error: err.message}) // 500 Internal Server Error
     }
-  }
-  httpUpdateFolderById = async (req: Request, res: Response): Promise<void> => {
-      console.log('Hi from httpUpdateFolderById!')
-      try {
-      // 1 Extract the data
-      const folderId = req.params.id;
-      const folderData = req.body;
+    httpUpdateFolderById = async (req: Request, res: Response): Promise<void> => {
+        console.log('Hi from httpUpdateFolderById!')
+        try {
+            // 1 Extract the data
 
-      // 2 Validate the data
+            console.log("This is req.body: ", req.body)
+            const folderId = FolderIdSchema.safeParse(req.params.id)
+            const parsedFolder = UpdateFolderSchema.safeParse(req.body)
 
-      // 3 Call the usecase. 
-      const folder = await this.updateFolderByIdUseCase.execute(folderId, folderData)
+            // 2 Validate the data
+            if (!parsedFolder.success) {
+                res.status(422).json({ errors: parsedFolder.error.format()})
+                return
+            }
 
-      // 4 Handle usecase exception.
+            if (!folderId.success) {
+                res.status(422).json({ errors: folderId.error.format()})
+                return
+            }
 
-      // 5 Response
-      res.status(200).json(folder)
-      } catch (err: any) {
-      res.status(500).json({
-          error: err.message,
-      })
-      }
-  }
-  httpDeleteFolderById = async (req: Request, res: Response): Promise<void> => {
-      console.log('Hi from httpDeleteFolderById!')
-      try {
-      // 1 Extract the data
-      const folderId = req.params.id;
-  
-      // 2 Validate the data
-  
-      // 3 Call the usecase. 
-      await this.deleteFolderByIdUseCase.execute(folderId)
-  
-      // 4 Handle usecase exception.
-  
-      // 5 Response
-      res.status(204).send()
-      } catch (err: any) {
-      res.status(500).json({
-          error: err.message,
-      })
-      }
-  }
+            console.log("This is folderId.data: ", folderId.data)
+            console.log("This is parsedFolder.data: ", parsedFolder.data)
+
+            // 3 Call the usecase. 
+            const folder = await this.updateFolderByIdUseCase.execute(folderId.data, parsedFolder.data)
+
+            // 4 
+            if(!folder) {
+                res.status(400).json({ message: "Folder not found"})
+            }
+            // 5 Response
+            res.status(200).json({ message: "Folder updated succesfully", updatedFolder: folder})
+        } catch (err: any) {
+            res.status(500).json({
+            error: err.message,
+        })
+        }
+    }
+    httpDeleteFolderById = async (req: Request, res: Response): Promise<void> => {
+        console.log('Hi from httpDeleteFolderById!')
+        try {
+            // 1 Extract the data
+            const folderId = req.params.id;
+
+            // 2 Validate the data
+
+            // 3 Call the usecase. 
+            await this.deleteFolderByIdUseCase.execute(folderId)
+
+            // 4 Handle usecase exception.
+
+            // 5 Response
+            res.status(204).send()
+        } catch (err: any) {
+            res.status(500).json({
+            error: err.message,
+        })
+        }
+    }
 }

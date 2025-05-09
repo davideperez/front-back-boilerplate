@@ -12,10 +12,10 @@ export class CreateFolderUseCase {
      * @param folderData - The data of the folder to be created.
      * @returns The created folder or null if the creation failed.
      */
-
     async execute(folderData: Partial<Folder>): Promise<Partial<Folder> | null> {
         // 1. Business logic: Validate no Folders with the same firsName AND lastName exists.
-
+        
+        // TODO: Shouldnt be a try catch in some point here?
         const firstName = folderData.firstName
         const lastName = folderData.lastName
 
@@ -24,6 +24,7 @@ export class CreateFolderUseCase {
         } 
 
         const folderExists = await this.repository.folderExists(firstName, lastName)
+        
         if (folderExists) {
             throw new Error('Ya existe un legajo con el mismo nombre.')
         }
@@ -51,11 +52,11 @@ export class CreateFolderUseCase {
             updatedBy: folderData.updatedBy,
         }
         
-        // 3. Create the folder in the database
+        // 3. Call the repository to create the folder in the database.
         const newFolderResponse = await this.repository.createFolder(newFolder)
 
         if (!newFolderResponse) {
-            throw new Error('Error inesperado: No se pudo crear la carpeta.')
+            throw new Error('Error inesperado: No se pudo crear el legajo.')
         }
         // 4. Return the folder created
         return newFolderResponse

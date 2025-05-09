@@ -13,7 +13,7 @@ foldersRouter.post('/', upload.single('image'), foldersController.httpCreateFold
 
 // Update
 
-foldersRouter.put('/:id', foldersController.httpUpdateFolderById);
+foldersRouter.put('/:id', upload.single('image'),foldersController.httpUpdateFolderById);
 
 // Delete
 foldersRouter.delete('/:id', foldersController.httpDeleteFolderById);

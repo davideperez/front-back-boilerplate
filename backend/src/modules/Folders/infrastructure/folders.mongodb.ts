@@ -1,6 +1,9 @@
 import { FoldersRepository } from '../domain/folders.repository';
 import { FolderDB } from './folders.schema.mongoose';
 import { Folder } from '../domain/folders.entity'
+import { GetFoldersFromDBRequestDTO, GetFoldersFromDBRequestSchema, GetFoldersFromDBResponseDTO } from '../domain/dtos/read/getAllFoldersResponse.dto';
+// import { SortOrder } from 'mongoose';
+import { SafeParseError } from 'zod';
 
 
 export class FoldersMongoRepository implements FoldersRepository {
@@ -61,41 +64,70 @@ export class FoldersMongoRepository implements FoldersRepository {
             return null;
         }
     }
-    async getAllFolders(page: number, items: number, search: string): Promise<Folder[] | null> {
-        try {
-            const query: { [key: string]: any } = {};
 
-            if (search) query.title = { $regex: `${search}`, $options: 'i' };
+    async getFoldersFromDB(input: GetFoldersFromDBRequestDTO): Promise<GetFoldersFromDBResponseDTO> {
+        // 1. Extract the input
+        const { search, sortBy, sortOrder, skip, limit } = input
 
-            const folders = await FolderDB.find(query, { '__v': 0 })
-                .skip((page - 1) * items)
-                .limit(items);
+        // 2. Construct a filter object based on the search term
+        const filter = {
+            $or: [
+                { firstName: { $regex: search, $options: 'i' } },
+                { lastName: { $regex: search, $options: 'i' } },
+            ],
+        };
 
-            return folders;
-        } catch (error) {
-            console.error('Error getting all folders:', error);
-            return null;
+        // 3. Construct a sort object based on the sortBy and sortOrder parameters
+        type SortOrder = 1 | -1;
+
+        const sort: { [key: string]: SortOrder }  = {};
+        
+        if (sortBy) {
+            sort[sortBy] = sortOrder === 'asc' ? 1 : -1
         }
+
+        console.log('Folders Module > folders.mongodb.ts > getFoldersFromDB > This is "sortOrder":', sortOrder)
+        console.log('Folders Module > folders.mongodb.ts > getFoldersFromDB > This is "sort":', sort)
+        
+        // 4 Construct the query to get the folders from the database
+        const query = FolderDB.find(filter).sort(sort)
+        
+        if(typeof skip === 'number') query.skip(skip)
+            if (typeof limit === 'number') query.limit(limit);
+        
+        // 5. Execute the query to get the folders from the database
+        const folders = await query.exec();
+        
+        // 5.1 Handle the case when no folders are found
+        if (!folders || folders.length === 0) {
+            return {
+                folders: [],
+                totalItemsCount: 0,
+            };
+        }
+
+        // 6. Get the total count of items in the collection
+        const totalItemsCount = await FolderDB.countDocuments(filter).exec();
+        
+        // 7. Return the result as an object containing the folders and total items count
+        return {
+            folders,
+            totalItemsCount,
+        };
     }
     async updateFolderById(id: string, folder: Partial<Folder>): Promise<Folder | null> {
-        try {
-            const updatedFolder = await FolderDB.findByIdAndUpdate(id, folder, { new: true }).exec();
-            return updatedFolder;
-        } catch (error) {
-            console.error('Error updating folder by ID:', error);
-            return null;
-        }
+        console.log('This is folder: ', folder)
+        console.log('This is id: ', id)
+        const updatedFolder = await FolderDB.findByIdAndUpdate(id, folder, { new: true })/* .exec() */;
+        console.log('This is updatedFolder: ', updatedFolder)
+        return updatedFolder;
     }
+
     async deleteFolderById(id: string): Promise<Folder | null> {
-        try {
-            const deletedFolder = await FolderDB.findByIdAndDelete(id).exec();
-            return deletedFolder;
-        } catch (error) {
-            console.error('Error deleting folder by ID:', error);
-            return null;
-        }
+        const deletedFolder = await FolderDB.findByIdAndDelete(id).exec();
+        return deletedFolder;
     }
-    async folderExists(firstName: string, lastName: string): Promise<boolean> {
+    async folderExists(firstName: string, lastName: string): Promise<boolean | null> {
         try {
             // 1. Extracts and constructs the data
             const folderToLookFor = {
@@ -114,7 +146,7 @@ export class FoldersMongoRepository implements FoldersRepository {
             return exists ? true : false;
         } catch (error) {
             console.error('Error checking if folder exists:', error);
-            throw new Error('Error checking if folder exists');
+            return null;
         }
     }
 }    

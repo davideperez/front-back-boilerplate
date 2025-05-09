@@ -18,6 +18,11 @@ describe('POST /v1/folders', () => {
         console.log('🧹 Cleaning the database before each test...');
     });
 
+    afterEach(async () => {
+        await FolderDB.deleteMany({});
+        console.log('🧹 Folder DB is empty.');
+    })
+
     it('🧪 should create a new folder succesfully', async() => {
         const response = await request(app)
             .post('/v1/folders')
@@ -40,8 +45,8 @@ describe('POST /v1/folders', () => {
             .attach('image', path.join(__dirname, './assets/profile-picture-test-image.jpg'))
         
         expect(response.statusCode).toBe(201)
-        expect(response.body.newFolder).toHaveProperty('_id')
-        expect(response.body.newFolder.firstName).toBe('Juan')
+        expect(response.body.data).toHaveProperty('_id')
+        expect(response.body.data.firstName).toBe('Juan')
     })
 
     it('🧪 should return 400 if name is missing', async() => {
@@ -67,7 +72,6 @@ describe('POST /v1/folders', () => {
         expect(response.statusCode).toBe(422)
         expect(response.body).toHaveProperty('errors');
     })
-
     it('should return 409, if a folder with this name and lastname already exists', async() => {
         // First creation
         await request(app)
@@ -115,3 +119,5 @@ describe('POST /v1/folders', () => {
         expect(response.body.error).toContain('Ya existe un legajo con el mismo nombre.')
     })
 })
+
+

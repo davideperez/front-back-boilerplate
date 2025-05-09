@@ -1,11 +1,12 @@
+import { GetFoldersFromDBRequestDTO, GetFoldersFromDBResponseDTO } from "./dtos/read/getAllFoldersResponse.dto";
 import { Folder } from "./folders.entity";
 
 
 export interface FoldersRepository {
-    folderExists(firstName: string, lastName: string): Promise<boolean>;
+    folderExists(firstName: string, lastName: string): Promise<boolean | null>;
     createFolder(folder: Partial<Folder>): Promise<Folder | null>;
     getFolderById(id: string): Promise<Folder | null>;
-    getAllFolders(page: number, items: number, search: string): Promise<Folder[] | null>;
+    getFoldersFromDB({}: GetFoldersFromDBRequestDTO): Promise<GetFoldersFromDBResponseDTO>;
     updateFolderById(id: string, folder: Partial<Folder>): Promise<Folder | null>;
     deleteFolderById(id: string): Promise<Folder | null>;
 }

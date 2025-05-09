@@ -19,6 +19,7 @@ export class SignUpUseCase {
     // 1 Validar que el user tenga todas los atributos con zod.
     const userSchema = SignUpDtoSchema.safeParse(user)
     
+    //TODO: Esta validacion va en el controller.
     if (!userSchema.success) {
       console.error('Validation errors: ', userSchema.error.issues);
       throw new Error(`Validation failed: ${JSON.stringify(userSchema.error.issues)}`)

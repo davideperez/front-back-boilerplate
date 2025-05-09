@@ -1,5 +1,5 @@
 import { FoldersRepository } from "../domain/folders.repository";
-import { Folder } from "../domain/folders.entity";
+import { GetFoldersFromDBRequestDTO, GetFoldersFromDBResponseDTO  } from "../domain/dtos/read/getAllFoldersResponse.dto";
 
 export class GetAllFoldersUseCase {
     private repository: FoldersRepository
@@ -8,9 +8,15 @@ export class GetAllFoldersUseCase {
         this.repository = repository
     }
 
-    async execute(): Promise<Folder[] | null> {
-        console.log('GetAllFoldersUseCase executed');
-        // Implement the logic to delete a folder by its ID here
-        return null // Placeholder return value, replace with actual implementation
-    }    
+    async execute(input: GetFoldersFromDBRequestDTO): Promise<GetFoldersFromDBResponseDTO> {
+        // 1. Validate the input data
+        const { search, sortBy, sortOrder, skip, limit } = input;
+        
+        // 2. Call the repository to get the folders from the database
+        const foldersFromDBResponse = await this.repository.getFoldersFromDB({ search, sortBy, sortOrder, skip, limit });
+        // TODO: should here be an error throwing or exception handling?
+        
+        // 3. Return the result
+        return foldersFromDBResponse;
+    }
 }

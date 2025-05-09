@@ -9,8 +9,12 @@ export class GetFolderByIdUseCase {
   }
 
   async execute(id: string): Promise<Partial<Folder> | null> {
-      console.log('GetFolderByIdUseCase executed');
-      // Implement the logic to delete a folder by its ID here
-      return null; // Placeholder return value, replace with actual implementation
+      const folder = await this.repository.getFolderById(id)
+
+      if(!folder) {
+        return null
+      }
+
+      return folder; // Placeholder return value, replace with actual implementation
   }    
 }
