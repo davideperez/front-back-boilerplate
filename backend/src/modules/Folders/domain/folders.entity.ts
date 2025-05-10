@@ -22,6 +22,8 @@ export const FolderSchema = z.object({
     createdBy: z.string().optional(),
     updatedAt: z.date().optional(),
     updatedBy: z.string().optional(),
+    deletedAt: z.date().optional(),
+    deletedBy: z.string().optional(),
 });
 
 export type Folder = z.infer<typeof FolderSchema>;

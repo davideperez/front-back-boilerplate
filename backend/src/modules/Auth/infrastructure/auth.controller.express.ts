@@ -53,7 +53,6 @@ export class ExpressAuthController {
       const newUser: SignUpResponseDto = await this.signUpUseCase.execute(validatedUser)
   
     // 4 Responder con un 201 y el usuario creado. TODO: Hace falta devolverlo?
-      console.log('users.controller.ts > httpSignUpUser > newUser: ', newUser)
       res.status(201).json({message: 'User created successfully', newUser})
     } catch (err: any) {
       console.error(`Error al registrarse ${err.message}`);  
@@ -100,10 +99,8 @@ export class ExpressAuthController {
           path: "/v1/users/refresh-token"
         });
 
-        console.log("httpLoginUser > req.cookies: ", req.cookies)
       
         // 5 Send the Access Token.
-        console.log('users.controller.ts > httpLoginUser > loginReponse: ', loginResponse)
         res.status(200).json({message: 'User created successfully', accessToken: accessToken})
       } catch (err: any) {
         console.error(`Error al loguear el usuario: ${err.message}`);  

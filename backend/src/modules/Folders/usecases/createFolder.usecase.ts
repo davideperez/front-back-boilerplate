@@ -23,7 +23,7 @@ export class CreateFolderUseCase {
             throw new Error('El nombre y el apellido son obligatorios.')
         } 
 
-        const folderExists = await this.repository.folderExists(firstName, lastName)
+        const folderExists = await this.repository.folderExistsByFirstAndLastName(firstName, lastName)
         
         if (folderExists) {
             throw new Error('Ya existe un legajo con el mismo nombre.')

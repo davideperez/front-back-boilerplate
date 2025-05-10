@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { Folder } from '../domain/folders.entity'
+import { Folder } from '../../domain/folders.entity'
 
 const Schema = mongoose.Schema
 
@@ -74,6 +74,10 @@ const folderSchema = new Schema<Folder>({
         type: String,
         default: null,
     },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
     createdBy: {
         type: String,
         default: null,
@@ -82,15 +86,18 @@ const folderSchema = new Schema<Folder>({
         type: String,
         default: null,
     },
-    // Estos son redundantes ya que timestamps: true ya los crea.
-    // createdAt: {
-    //     type: Date,
-    //     default: Date.now,
-    // },
-    // updatedAt: {
-    //     type: Date,
-    //     default: Date.now,
-    // },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
+    deletedAt: {
+        type: Date,
+        default: null,
+    },
+    deletedBy: {
+        type: String,
+        default: null,
+    },
 }, {
     timestamps: true,
     minimize: false, // No eliminar propiedades vacias.

@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../../../app';
 import { validFolderData } from './__mocks__/folders.mocks';
-import { FolderDB } from '../infrastructure/folders.schema.mongoose';
+import { FolderDB } from '../infrastructure/mongo-repository/folders.schema.mongoose';
 
 describe('PUT /v1/folders/:id', () => {
     beforeEach(async () => {

@@ -31,7 +31,6 @@ type userLoginData = {
 export async function login  (userLoginData: userLoginData) {
   const { email, password } = userLoginData
   const response = await axiosInstance.post("/auth/login", { email, password })
-  console.log("Response from login: ", response)
   
   if (response.status === 200) {
 

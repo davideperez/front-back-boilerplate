@@ -1,6 +1,6 @@
 import app from "../../../app";
 import request from 'supertest';
-import { FolderDB } from "../infrastructure/folders.schema.mongoose";
+import { FolderDB } from "../infrastructure/mongo-repository/folders.schema.mongoose";
 import { validFolderData } from "./__mocks__/folders.mocks";
 
 

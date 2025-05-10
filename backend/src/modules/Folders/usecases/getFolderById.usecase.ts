@@ -9,12 +9,12 @@ export class GetFolderByIdUseCase {
   }
 
   async execute(id: string): Promise<Partial<Folder> | null> {
-      const folder = await this.repository.getFolderById(id)
+    
+    const folder = await this.repository.getFolderById(id)
 
       if(!folder) {
         return null
       }
-
       return folder; // Placeholder return value, replace with actual implementation
   }    
 }

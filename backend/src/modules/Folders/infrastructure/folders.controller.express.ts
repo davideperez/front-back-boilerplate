@@ -12,7 +12,9 @@ import { UpdateFolderByIdUseCase } from '../usecases/updateFolderById.usecase'
 
 import { DeleteFolderByIdUseCase } from '../usecases/deleteFolderById.usecase'
 
-import { FolderIdSchema, UpdateFolderSchema } from '../domain/dtos/update/updateFolders.dto'
+import { UpdateFolderSchema } from '../domain/dtos/update/updateFolders.dto'
+
+import { MongoIdSchema } from '../../../shared/dtos/mongoId.Schema'
 
 import { Folder, FolderSchema } from '../domain/folders.entity'
 import { uploadImageToCloudinary } from '../../../connections/cloudinary.connection'
@@ -39,7 +41,6 @@ export class ExpressFoldersController {
     this.deleteFolderByIdUseCase = input.deleteFolderByIdUseCase
   }
     httpGetFolderById = async (req: Request, res: Response): Promise<void> => {
-        console.log('Hi from httpGetFolderById!')
         try {
             // 1 Extract the data
             const folderId: string = req.params.id;
@@ -61,21 +62,16 @@ export class ExpressFoldersController {
             // 5 Response
             res.status(200).json(folder)
         } catch (err: any) {
-            res.status(500).json({
-            error: err.message,
-        })
+            console.error(`Error Getting Folder By ID: ${err.message}`);
+            res.status(500).json({ error: err.message  })
         }
     }
 
     httpGetAllFolders = async (req: Request, res: Response): Promise<void> => {
-        console.log('Hi from httpGetAllFolders!')
         try {
             // 1 Validate the types of the Query.
-            console.log("This is the req.query: ", req.query)
-
             const parsedQuery = GetAllFoldersQuerySchema.safeParse(req.query)
 
-            console.log("This is the parsedQuery: ", parsedQuery.data )
             // 1.1 Handle validation exception.
             if (!parsedQuery.success) { 
                 res.status(422).json({ errors: parsedQuery.error.format()}); // 422 Unprocessable Entity
@@ -131,6 +127,7 @@ export class ExpressFoldersController {
                 }
             })
         } catch (err: any) {
+            console.error(`Error Getting All the Folders: ${err.message}`);
             res
             .status(500)
             .json({error: err.message})
@@ -180,25 +177,19 @@ export class ExpressFoldersController {
                 return;
             }
             // 6.1 Response
-            res
-                .status(201) // 201 Created
-                .json({
-                    message: 'Folder created successfully.', 
-                    data: newFolder
-                })
+             // 201 Created
+            res.status(201).json({ message: 'Folder created successfully.', data: newFolder })
             // 6.2 Handle unexpected exceptions.
         } catch (err: any) {
             console.error(`Error creating Folder: ${err.message}`);
             res.status(500).json({error: err.message}) // 500 Internal Server Error
         }
     }
+
     httpUpdateFolderById = async (req: Request, res: Response): Promise<void> => {
-        console.log('Hi from httpUpdateFolderById!')
         try {
             // 1 Extract the data
-
-            console.log("This is req.body: ", req.body)
-            const folderId = FolderIdSchema.safeParse(req.params.id)
+            const folderId = MongoIdSchema.safeParse(req.params.id)
             const parsedFolder = UpdateFolderSchema.safeParse(req.body)
 
             // 2 Validate the data
@@ -212,9 +203,6 @@ export class ExpressFoldersController {
                 return
             }
 
-            console.log("This is folderId.data: ", folderId.data)
-            console.log("This is parsedFolder.data: ", parsedFolder.data)
-
             // 3 Call the usecase. 
             const folder = await this.updateFolderByIdUseCase.execute(folderId.data, parsedFolder.data)
 
@@ -225,30 +213,50 @@ export class ExpressFoldersController {
             // 5 Response
             res.status(200).json({ message: "Folder updated succesfully", updatedFolder: folder})
         } catch (err: any) {
-            res.status(500).json({
-            error: err.message,
-        })
+            console.error(`Error Updating Folder By ID: ${err.message}`);
+            res.status(500).json({ error: err.message })
         }
     }
     httpDeleteFolderById = async (req: Request, res: Response): Promise<void> => {
-        console.log('Hi from httpDeleteFolderById!')
         try {
             // 1 Extract the data
             const folderId = req.params.id;
+            const userId = req.body.userId;
+
+            console.log("httpDeleteFolderById > folderId:" , folderId)
+            console.log("httpDeleteFolderById > userId:" , userId)
 
             // 2 Validate the data
+            const validatedFolderId = MongoIdSchema.safeParse(folderId)
+            const validatedUserId = MongoIdSchema.safeParse(userId)
+        
+            if (!validatedFolderId.success) {
+                throw new Error('A Folder Id is required')
+            }
+
+            if (!validatedUserId.success) {
+                throw new Error('A User Id is required')
+            }
+
+            console.log("httpDeleteFolderById > validatedFolderId.data:" , validatedFolderId.data)
+            console.log("httpDeleteFolderById > validatedUserId.data:" , validatedUserId.data)
 
             // 3 Call the usecase. 
-            await this.deleteFolderByIdUseCase.execute(folderId)
+            const deletedFolder = await this.deleteFolderByIdUseCase.execute(
+                validatedFolderId.data,
+                validatedUserId.data
+            )
 
-            // 4 Handle usecase exception.
-
-            // 5 Response
+            // 3.1 Handle usecase exception.
+            if(!deletedFolder) {
+                res.status(400).json({ message: "Folder not found"})
+            }
+            
+            // 4 Response
             res.status(204).send()
         } catch (err: any) {
-            res.status(500).json({
-            error: err.message,
-        })
+            console.error(`Error Deleting Folder: ${err.message}`);
+            res.status(500).json({error: err.message})
         }
     }
 }

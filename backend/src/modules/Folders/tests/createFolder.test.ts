@@ -2,7 +2,7 @@ import path from 'path';
 import request from 'supertest';
 import app from '../../../app';
 import { missingFirstNameFolderData, validFolderData } from './__mocks__/folders.mocks';
-import { FolderDB } from '../infrastructure/folders.schema.mongoose';
+import { FolderDB } from '../infrastructure/mongo-repository/folders.schema.mongoose';
 
 describe('GET /ping', () => {
     it('🧪 should return pong', async () => {

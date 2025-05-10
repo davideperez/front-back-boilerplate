@@ -13,7 +13,7 @@ export class GetAllFoldersUseCase {
         const { search, sortBy, sortOrder, skip, limit } = input;
         
         // 2. Call the repository to get the folders from the database
-        const foldersFromDBResponse = await this.repository.getFoldersFromDB({ search, sortBy, sortOrder, skip, limit });
+        const foldersFromDBResponse = await this.repository.getFolders({ search, sortBy, sortOrder, skip, limit });
         // TODO: should here be an error throwing or exception handling?
         
         // 3. Return the result
