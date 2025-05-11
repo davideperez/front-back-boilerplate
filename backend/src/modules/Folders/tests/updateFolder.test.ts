@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../../../app';
 import { validFolderData } from './__mocks__/folders.mocks';
-import { FolderDB } from '../infrastructure/mongo-repository/folders.schema.mongoose';
+import { FolderDB } from '../infrastructure/schemas/folders.schema.mongoose';
 
 describe('PUT /v1/folders/:id', () => {
     beforeEach(async () => {
@@ -22,7 +22,6 @@ describe('PUT /v1/folders/:id', () => {
             .put(`/v1/folders/${folder1._id}`)
             .send({ lastName: 'Gomez'})
         
-            console.log("=============================> This is response.body:  ", response.body)
         expect(response.statusCode).toBe(200)
         expect(response.body.updatedFolder).toHaveProperty('_id')
         expect(response.body.updatedFolder.lastName).toBe('Gomez')

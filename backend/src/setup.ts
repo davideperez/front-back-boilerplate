@@ -1,7 +1,7 @@
 
 // Folders Imports
 
-import { FoldersMongoRepository } from "./modules/Folders/infrastructure/mongo-repository";
+import { FoldersMongoRepository } from "./modules/Folders/infrastructure/mongo-repository/_index";
 
 import { ExpressFoldersController } from "./modules/Folders/infrastructure/folders.controller.express";
 import { GetAllFoldersUseCase } from "./modules/Folders/usecases/getAllFolders.usecase";

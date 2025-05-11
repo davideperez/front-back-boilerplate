@@ -4,7 +4,7 @@ import { FolderDB } from "../infrastructure/schemas/folders.schema.mongoose";
 import { validFolderData } from "./__mocks__/folders.mocks";
 
 
-describe('GET /v1/folders/:id', () => {
+describe('DELETE /v1/folders/:id', () => {
     beforeEach(async () => {
         await FolderDB.deleteMany({});
         console.log('🧹 Cleaning the database before each test...');
@@ -37,16 +37,26 @@ describe('GET /v1/folders/:id', () => {
         await folder3.save();
         await folder4.save();
         
+        console.log("=======================> folder1._id: ", folder1._id)
         // Makes the request
         const response = await request(app)
-            .get(`/v1/folders/${folder1._id}`)
-            .send()
+            .delete(`/v1/folders/${folder1._id}`)
+            .send({userId: "whateverUserID"})
 
+        console.log("=======================> response.body: ", response.body)
         // Measures the response
-        expect(response.statusCode).toBe(200)
-        expect(response.body.data).toHaveProperty('_id')
-        expect(response.body.data.firstName).toBe('Juan')
-
+        expect(response.statusCode).toBe(202)
+        expect(response.body.message).toBe("Folder succesfully deleted.")
+        
+        await request(app).delete(`/v1/folders/${folder2._id}`).send({userId: "whateverUserID"})
+        await request(app).delete(`/v1/folders/${folder3._id}`).send({userId: "whateverUserID"})
+        await request(app).delete(`/v1/folders/${folder4._id}`).send({userId: "whateverUserID"})
+        
+        const getAllFolders = await request(app)
+            .get('/v1/folders')
+            .query({ search: '', sortBy: 'firstName', sortOrder: 'asc', page: 1, pageSize: 3 })
+        console.log("=======================> getAllFolders.body: ", getAllFolders.body)
+        expect(getAllFolders.body.data.items.length).toBe(0)
     });
 
     // it('should return a 200 even if all query params are empty') {}

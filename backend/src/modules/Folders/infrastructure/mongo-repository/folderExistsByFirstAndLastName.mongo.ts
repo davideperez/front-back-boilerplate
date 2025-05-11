@@ -1,4 +1,4 @@
-import { FolderDB } from "./folders.schema.mongoose";
+import { FolderDB } from "../schemas/folders.schema.mongoose";
 
 export async function folderExistsByFirstAndLastName(firstName: string, lastName: string): Promise<boolean | null> {
     try {

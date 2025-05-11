@@ -1,5 +1,5 @@
 import { Folder } from '../../domain/folders.entity';
-import { FolderDB } from './folders.schema.mongoose';
+import { FolderDB } from '../schemas/folders.schema.mongoose';
 
 export async function createFolder(folder: Partial<Folder>): Promise<Folder | null> {
     try {

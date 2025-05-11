@@ -1,12 +1,7 @@
 import { Folder } from "../../domain/folders.entity";
-import { FolderDB } from "./folders.schema.mongoose";
+import { FolderDB } from "../schemas/folders.schema.mongoose";
 
-export async function softDeleteFolderById(
-    folderId: string, userId: string
-): Promise<Folder | null> {
-    console.log("softDeleteFolderById > folderId:" , folderId)
-    console.log("softDeleteFolderById > userId:" , userId)
-
+export async function softDeleteFolderById(folderId: string, userId: string): Promise<Folder | null> {
     const deletedFolder = await FolderDB.findOneAndUpdate(
         { _id: folderId },
         { 
@@ -17,8 +12,6 @@ export async function softDeleteFolderById(
         },
         { new: true }
     )
-
-    console.log("softDeleteFolderById > deletedFolder:" , deletedFolder)
 
     return deletedFolder;
 }

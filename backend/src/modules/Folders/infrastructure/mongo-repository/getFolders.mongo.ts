@@ -1,5 +1,5 @@
 import { GetFoldersFromDBRequestDTO, GetFoldersFromDBResponseDTO } from '../../domain/dtos/read/getAllFoldersResponse.dto';
-import { FolderDB } from './folders.schema.mongoose';
+import { FolderDB } from '../schemas/folders.schema.mongoose';
 
 
 export async function getFolders(input: GetFoldersFromDBRequestDTO): Promise<GetFoldersFromDBResponseDTO> {

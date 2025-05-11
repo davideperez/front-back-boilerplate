@@ -60,7 +60,10 @@ export class ExpressFoldersController {
             }
 
             // 5 Response
-            res.status(200).json(folder)
+            res.status(200).json({ 
+                message: "Folder succesfully retrieved.", 
+                data: folder
+            })
         } catch (err: any) {
             console.error(`Error Getting Folder By ID: ${err.message}`);
             res.status(500).json({ error: err.message  })
@@ -103,7 +106,18 @@ export class ExpressFoldersController {
 
             // 4.2 Handle empty folders exception.
             if (queryResponse.folders.length === 0) {
-                res.status(404).json({ error: 'No folders found' });
+                res.status(404).json({ 
+                    error: 'No folders found',
+                    data: {
+                        items: [],
+                        pagination: {
+                            page: 1,
+                            pageSize: pageSize,
+                            totalPages: 1,
+                            totalItems: 0,
+                        }    
+                    }
+                });
                 return;
             }
 
@@ -117,20 +131,25 @@ export class ExpressFoldersController {
             res
             .status(200)
             .json({
-                message: 'Folders retrieved successfully.', 
-                items: queryResponse.folders,
-                pagination: {
-                    page: page,
-                    pageSize: pageSize,
-                    totalPages: totalPages,
-                    totalItems: queryResponse.totalItemsCount,
+                message: 'Folders retrieved successfully.',
+                data: {
+                    items: queryResponse.folders,
+                    pagination: {
+                        page: page,
+                        pageSize: pageSize,
+                        totalPages: totalPages,
+                        totalItems: queryResponse.totalItemsCount,
+                    }
                 }
             })
         } catch (err: any) {
             console.error(`Error Getting All the Folders: ${err.message}`);
             res
             .status(500)
-            .json({error: err.message})
+            .json({ // TODO: Review if it is ok to send this empty data here.
+                error: err.message,
+                data: null
+            })
         }
     }
     httpCreateFolder = async (req: Request, res: Response): Promise<void> => {
@@ -178,14 +197,16 @@ export class ExpressFoldersController {
             }
             // 6.1 Response
              // 201 Created
-            res.status(201).json({ message: 'Folder created successfully.', data: newFolder })
+            res.status(201).json({ 
+                message: 'Folder created successfully.', 
+                data: newFolder 
+            })
             // 6.2 Handle unexpected exceptions.
         } catch (err: any) {
             console.error(`Error creating Folder: ${err.message}`);
             res.status(500).json({error: err.message}) // 500 Internal Server Error
         }
     }
-
     httpUpdateFolderById = async (req: Request, res: Response): Promise<void> => {
         try {
             // 1 Extract the data
@@ -211,7 +232,10 @@ export class ExpressFoldersController {
                 res.status(400).json({ message: "Folder not found"})
             }
             // 5 Response
-            res.status(200).json({ message: "Folder updated succesfully", updatedFolder: folder})
+            res.status(200).json({ 
+                message: "Folder updated succesfully", 
+                updatedFolder: folder
+            })
         } catch (err: any) {
             console.error(`Error Updating Folder By ID: ${err.message}`);
             res.status(500).json({ error: err.message })
@@ -223,13 +247,10 @@ export class ExpressFoldersController {
             const folderId = req.params.id;
             const userId = req.body.userId;
 
-            console.log("httpDeleteFolderById > folderId:" , folderId)
-            console.log("httpDeleteFolderById > userId:" , userId)
-
             // 2 Validate the data
             const validatedFolderId = MongoIdSchema.safeParse(folderId)
             const validatedUserId = MongoIdSchema.safeParse(userId)
-        
+            
             if (!validatedFolderId.success) {
                 throw new Error('A Folder Id is required')
             }
@@ -238,10 +259,7 @@ export class ExpressFoldersController {
                 throw new Error('A User Id is required')
             }
 
-            console.log("httpDeleteFolderById > validatedFolderId.data:" , validatedFolderId.data)
-            console.log("httpDeleteFolderById > validatedUserId.data:" , validatedUserId.data)
-
-            // 3 Call the usecase. 
+            // 3 Call the usecase
             const deletedFolder = await this.deleteFolderByIdUseCase.execute(
                 validatedFolderId.data,
                 validatedUserId.data
@@ -253,7 +271,11 @@ export class ExpressFoldersController {
             }
             
             // 4 Response
-            res.status(204).send()
+            res.status(202).json({
+                message: "Folder succesfully deleted.",
+                data: deletedFolder
+
+            })
         } catch (err: any) {
             console.error(`Error Deleting Folder: ${err.message}`);
             res.status(500).json({error: err.message})

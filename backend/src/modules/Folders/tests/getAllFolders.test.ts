@@ -1,6 +1,6 @@
 import app from "../../../app";
 import request from 'supertest';
-import { FolderDB } from "../infrastructure/mongo-repository/folders.schema.mongoose";
+import { FolderDB } from "../infrastructure/schemas/folders.schema.mongoose";
 import { validFolderData } from "./__mocks__/folders.mocks";
 
 
@@ -44,9 +44,9 @@ describe('GET /v1/folders', () => {
 
         // Measures the response
         expect(response.statusCode).toBe(200);
-        expect(response.body.items.length).toBe(3);
-        expect(response.body.items[0].firstName).toBe(folder3.firstName);
-        expect(response.body.pagination.totalItems).toBe(4);
+        expect(response.body.data.items.length).toBe(3);
+        expect(response.body.data.items[0].firstName).toBe(folder3.firstName);
+        expect(response.body.data.pagination.totalItems).toBe(4);
 
     });
 
