@@ -1,13 +1,9 @@
 export function Dashboard() {
-    const mockUser = {
-      firstName: "David",
-      lastName: "Pérez",
-      email: "mock@email.com"
-    }  
   
     return (
-      <main>
-        { mockUser.firstName}'s Dashboard 
-      </main>
+    <div className="flex flex-col gap-4 p-4">
+      <h1>Home</h1>
+      <p>Cargando home... </p>
+    </div>
     )
   }

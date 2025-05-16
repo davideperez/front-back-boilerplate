@@ -8,12 +8,15 @@ interface AuthContextType {
   logout: () => void
 }
 
+
+// Context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: React.ReactNode
 }
 
+// Provider
 const AuthProvider: React.FC<AuthProviderProps> = ({ children } : { children: React.ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [token, setToken] = useState<string | null>(null);

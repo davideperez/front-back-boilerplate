@@ -2,7 +2,8 @@ export function UserPage() {
 
   return (
     <div>
-      <h1>This is a User Page</h1>
+      <h1>User</h1>
+      <p>Loading users...</p>
     </div>
   );
 }

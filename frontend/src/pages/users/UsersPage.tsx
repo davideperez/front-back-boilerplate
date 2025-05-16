@@ -1,8 +1,9 @@
 export function UsersPage() {
 
   return (
-    <div>
-      <h1>List of Users</h1>
+    <div className="flex flex-col gap-4 p-4">
+      <h1>Users</h1>
+      <p>Loading users...</p>
     </div>
   );
 }

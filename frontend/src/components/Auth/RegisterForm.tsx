@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 
-import { register } from "@/api/axios"
+import { register } from "@/api/users-api"
 import { registerFormSchema } from "@/schemas/registerFormSchema"
 
 

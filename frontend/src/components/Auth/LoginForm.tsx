@@ -5,7 +5,7 @@ import { z, ZodSchema } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
-import { login } from "@/api/axios"
+import { login } from "@/api/users-api"
 
 const loginFormSchema: ZodSchema = z
 .object({
