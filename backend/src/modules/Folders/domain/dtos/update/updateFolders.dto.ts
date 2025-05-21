@@ -11,6 +11,7 @@ export const UpdateFolderSchema = FolderSchema.pick({
     identityDocumentExpirationDate: true,
     school: true,
     schoolYear: true,
+    sex: true
 }).extend({
     placeOfBirth: FolderSchema.shape.placeOfBirth.partial().optional()
 })

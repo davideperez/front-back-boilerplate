@@ -58,7 +58,6 @@ export const FolderTableRowSchema = FolderDetailSchema.pick({
     profilePicture: true,
     createdAt: true,
     updatedAt: true,
-    birthDate: true,
 })
 
 export type FolderTableRowType = z.infer<typeof FolderTableRowSchema>
