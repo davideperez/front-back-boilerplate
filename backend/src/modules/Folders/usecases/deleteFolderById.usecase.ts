@@ -1,4 +1,3 @@
-import { MongoIdSchema } from "../../../shared/dtos/mongoId.Schema";
 import { Folder } from "../domain/folders.entity";
 import { FoldersRepository } from "../domain/folders.repository";
 

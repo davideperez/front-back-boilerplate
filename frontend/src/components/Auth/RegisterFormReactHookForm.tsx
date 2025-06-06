@@ -4,7 +4,7 @@ export const RegisterFormReactHookForm: React.FC = () => {
     const { register, handleSubmit, formState: { errors } } = useForm()
 
     const onSubmit = handleSubmit( data => {
-        console.log(data)
+        // console.log(data)
     })
 
     return (

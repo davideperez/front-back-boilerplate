@@ -1,31 +1,7 @@
-import { getFolders } from "@/api/folders-api";
-import { FolderDetailType, GetFoldersParamsType } from "@/types/folder";
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { FolderDetailType } from "@/types/folder";
+import { ActionReducerMapBuilder, createSlice } from "@reduxjs/toolkit";
+import { deleteFolderThunk, fetchFoldersThunk } from "./folders.thunks";
 
-// 1. Thunk function: A Redux wrapper, for the axios call to fetch folders from the API.
-export const fetchFolders = createAsyncThunk(
-    '/folders', // Action type prefix used internally by Redux. (doesn't need to match endpoint)
-    async (filters: GetFoldersParamsType, thunkAPI) => {
-        try {
-            const response = await getFolders(filters)
-            console.log("/src/store/foldersSlice.ts > fetchFolders(Thunk) > response: ", response)
-            console.log("/src/store/foldersSlice.ts > fetchFolders(Thunk) > response.data: ", response.data)
-
-            return {
-                items: response.data.items,
-                pagination: response.data.pagination
-            }
-        } catch (error: unknown) {
-            let message = "Error al traer los legajos"
-
-            if (error instanceof Error) {
-                message = error.message
-            }
-
-            return thunkAPI.rejectWithValue(message)
-        }
-    }
-)
 
 // 2 The Type definition for the Folder slice state
 interface FolderState {
@@ -53,6 +29,40 @@ const initialState: FolderState = {
     error: null
 }
 
+const handleFetchFolders = (builder: ActionReducerMapBuilder<FolderState>) => {
+  builder
+    .addCase(fetchFoldersThunk.pending, (state) => {
+        state.loading = true
+        state.error = null
+    })
+    .addCase(fetchFoldersThunk.fulfilled, (state, action) => {
+        state.loading = false
+        state.folders = action.payload.items
+        state.pagination = action.payload.pagination
+    })
+    .addCase(fetchFoldersThunk.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.payload as string
+    })
+}
+
+const handleDeleteFolder = (builder: ActionReducerMapBuilder<FolderState>) => {
+    builder
+        .addCase(deleteFolderThunk.pending, (state) => {
+            state.loading = true
+            state.error = null
+        })
+        .addCase(deleteFolderThunk.fulfilled, (state, action) => {
+            state.loading = false
+            state.folders = state.folders.filter(f => f._id !== action.payload._id)
+        })
+        .addCase(deleteFolderThunk.rejected, (state, action) => {
+            state.loading = false
+            state.error = action.payload as string
+        })
+}
+
+
 // 4 The Folder Slice definition 
 const foldersSlice = createSlice({
     // name: is the key under which this slice state will be 
@@ -64,21 +74,9 @@ const foldersSlice = createSlice({
     reducers: {},
     // Methods (actions or thunks?) that include async calls to third parties like fetchFolders.
     extraReducers: builder => { 
-        builder
-            .addCase(fetchFolders.pending, state => {
-                state.loading = true
-                state.error = null
-            })
-            .addCase(fetchFolders.fulfilled, (state, action) => {
-                state.loading = false
-                state.folders = action.payload.items
-                state.pagination = action.payload.pagination
-            })
-            .addCase(fetchFolders.rejected, (state, action) => {
-                state.loading = false
-                state.error = action.payload as string
-            })
-    },
+        handleFetchFolders(builder)
+        handleDeleteFolder(builder)
+    }
 })
 
 // 5 Exports the slice reducer to be registered in the store

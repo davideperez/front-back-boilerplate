@@ -4,8 +4,8 @@ import MainLayout from "@/components/Main/MainLayout";
 
 import { Dashboard } from "@/pages/Dashboard";
 
-import { FoldersListView } from "@/pages/folders/FoldersListView";
-import { FolderView } from "@/pages/folders/FolderView";
+import { FoldersPage } from "@/pages/folders/FoldersPage";
+import { FolderPage } from "@/pages/folders/FolderPage";
 
 import { FilePage } from "@/pages/files/FilePage";
 
@@ -20,8 +20,8 @@ const ProtectedRoutes = () => (
         <Route path="/" element ={<MainLayout />}>
             <Route index element ={<Dashboard />} />
 
-            <Route path="folders" element ={<FoldersListView />} />
-            <Route path="folder:id" element ={<FolderView />} />
+            <Route path="folders" element ={<FoldersPage />} />
+            <Route path="folder:id" element ={<FolderPage />} />
             
             <Route path="file:id" element ={<FilePage />} />
             

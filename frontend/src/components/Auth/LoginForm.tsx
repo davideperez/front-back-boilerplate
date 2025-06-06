@@ -40,7 +40,7 @@ export const LoginForm = ({ onSuccess} : LoginFormProps ) => {
     })
 
     const onSubmit = form.handleSubmit((values: LoginFormType) => {
-        console.log('This are the form values: ', values)
+        // console.log('This are the form values: ', values)
         // TODO: Send the form values to the backend
         login(values)
         onSuccess()

@@ -18,7 +18,7 @@ export const RegisterForm = () => { // TODO: Refactorizar.
 
 const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   e.preventDefault();
-  console.log('Form sent: ', form);
+  // console.log('Form sent: ', form);
 }
 
   return (

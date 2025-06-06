@@ -24,8 +24,8 @@ export const FolderDetailSchema = z.object({
     createdBy: z.string().optional(),
     updatedAt: z.date().optional(),
     updatedBy: z.string().optional(),
-    /* deletedAt: z.date().optional(), // Borrar estos datos. 
-    deletedBy: z.string().optional(), */
+    deletedAt: z.date().optional(), // TODO: Differentiate types for each usecase.
+    deletedBy: z.string().optional(),
 })
 
 export type FolderDetailType = z.infer<typeof FolderDetailSchema>
@@ -56,8 +56,8 @@ export const FolderTableRowSchema = FolderDetailSchema.pick({
     firstName: true,
     lastName: true,
     profilePicture: true,
-    createdAt: true,
-    updatedAt: true,
+   /*  createdAt: true,
+    updatedAt: true, */
 })
 
 export type FolderTableRowType = z.infer<typeof FolderTableRowSchema>

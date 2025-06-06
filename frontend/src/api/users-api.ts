@@ -51,6 +51,6 @@ type Users = [
 
 export async function getAllUsers () {
   const response = await axiosInstance.get<Users>("/users")
-  console.log("Response from getAllUsers: ", response)
+  // console.log("Response from getAllUsers: ", response)
   return response.data
 }

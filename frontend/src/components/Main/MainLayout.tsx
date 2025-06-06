@@ -1,15 +1,8 @@
 import AppSidebar from "./AppSidebar";
 
-import { Outlet } from "react-router-dom";
+import { Outlet, /* useLocation */ } from "react-router-dom";
 
-import { 
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "../ui/breadcrumb";
+
 
 import { Separator } from "@/components/ui/separator"
 
@@ -19,10 +12,12 @@ import {
     SidebarInset,
 } from "../ui/sidebar";
 import { ModeToggle } from "../ui/mode-toggle";
+// import AppBreadcrumb from "./AppBreadcrumb";
 
 
 export default function MainLayout() {
-
+    // const location = useLocation()
+    // console.log('Location: ', location)
     return (
         <SidebarProvider className="w-screen">
             <AppSidebar />
@@ -37,19 +32,9 @@ export default function MainLayout() {
                     <div className="flex items-center">
                         <SidebarTrigger className="-ml-1" />
                         <Separator orientation="vertical" className="mr-2 h-4"/>
-                        <Breadcrumb>
-                            <BreadcrumbList>
-                                <BreadcrumbItem className="hidden md:block">
-                                    <BreadcrumbLink href="#">
-                                        Home
-                                    </BreadcrumbLink>
-                                </BreadcrumbItem>
-                                <BreadcrumbSeparator className="hidden md:block"/>
-                                <BreadcrumbItem>
-                                    <BreadcrumbPage>Home</BreadcrumbPage>
-                                </BreadcrumbItem>
-                            </BreadcrumbList>
-                        </Breadcrumb>
+                        {/* <AppBreadcrumb 
+                            location={location}
+                        /> */}
                     </div>
                     <div>
                         <ModeToggle />

@@ -9,7 +9,7 @@ export function useGetUsers () {
       try {
         const data = await fetchUsers()
         setUsers(data.users)
-        console.log('useGetUsers > data: ', data)    
+        // console.log('useGetUsers > data: ', data)    
       } catch (error) {
         console.error("Error fetching users: ", error)
       }

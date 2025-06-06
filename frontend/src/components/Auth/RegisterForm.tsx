@@ -31,8 +31,8 @@ export const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
     const onSubmit = form.handleSubmit((values: RegisterFormType) => {
         register(values)
         onSuccess()
-        console.log("RegisterForm > onSubmit > values: ", values)
-        console.log("RegisterForm > onSubmit > typeof values: ", typeof values)
+        // console.log("RegisterForm > onSubmit > values: ", values)
+        // console.log("RegisterForm > onSubmit > typeof values: ", typeof values)
     })
 
     return (
