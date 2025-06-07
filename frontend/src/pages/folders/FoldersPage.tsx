@@ -8,7 +8,6 @@ import { ColumnDef } from '@tanstack/react-table'
 import { FolderTableRowType } from '@/types/folder'
 
 export function FoldersPage() {
-    console.log('FoldersPage rendered, begining')
     const dispatch = useDispatch<AppDispatch>()
 
     const {
@@ -54,7 +53,6 @@ export function FoldersPage() {
     
     if (loading) return <p>Cargando legajos...</p>
     if (error) return <p>Error: {error}</p>
-    console.log('FoldersPage rendered, end')
     
     return (
         <div>

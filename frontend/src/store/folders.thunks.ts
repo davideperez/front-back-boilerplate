@@ -9,8 +9,6 @@ export const fetchFoldersThunk = createAsyncThunk(
     async (filters: GetFoldersParamsType, thunkAPI) => {
         try {
             const response = await getFolders(filters)
-            // console.log("/src/store/foldersSlice.ts > fetchFolders(Thunk) > response: ", response)
-            // console.log("/src/store/foldersSlice.ts > fetchFolders(Thunk) > response.data: ", response.data)
 
             return {
                 items: response.data.items,
@@ -22,8 +20,8 @@ export const fetchFoldersThunk = createAsyncThunk(
             if (error instanceof Error) {
                 message = error.message
             }
-
             return thunkAPI.rejectWithValue(message)
+
         }
     }
 )

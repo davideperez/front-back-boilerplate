@@ -106,7 +106,7 @@ export class ExpressFoldersController {
 
             // 4.2 Handle empty folders exception.
             if (queryResponse.folders.length === 0) {
-                res.status(404).json({ 
+                res.status(200).json({ 
                     error: 'No folders found',
                     data: {
                         items: [],
