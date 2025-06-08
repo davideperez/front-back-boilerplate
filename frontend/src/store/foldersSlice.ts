@@ -29,6 +29,7 @@ const initialState: FolderState = {
     error: null
 }
 
+
 const handleFetchFolders = (builder: ActionReducerMapBuilder<FolderState>) => {
   builder
     .addCase(fetchFoldersThunk.pending, (state) => {

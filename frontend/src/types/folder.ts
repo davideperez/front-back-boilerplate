@@ -31,7 +31,7 @@ export const FolderDetailSchema = z.object({
 export type FolderDetailType = z.infer<typeof FolderDetailSchema>
 
 
-// Read ll Folders Response
+// Get All Folders Response: Schema and Type
 
 export const getAllFoldersResponseSchema = z.object({
     message: z.string(),
@@ -49,7 +49,7 @@ export const getAllFoldersResponseSchema = z.object({
 export type getAllFoldersResponseType = z.infer<typeof getAllFoldersResponseSchema>
 
 
-// Read a Table Row Folder
+// Folders Table Row Schema and Type
 
 export const FolderTableRowSchema = FolderDetailSchema.pick({
     _id: true,
@@ -76,3 +76,34 @@ export const GetFoldersParamsTypeSchema = z.object({
 });
 
 export type GetFoldersParamsType = z.infer<typeof GetFoldersParamsTypeSchema>
+
+// Create
+
+export const CreateFolderFormSchema = FolderDetailSchema.pick({
+    _id: true,
+    firstName: true,
+    lastName: true,
+    birthDate: true,
+    profilePicture: true,
+    sex: true,
+    nationality: true,
+    identityDocumentType: true,
+    identityDocumentNumber: true,
+    identityDocumentExpirationDate: true,
+    school: true,
+    schoolYear: true,
+    createdAt: true,
+    createdBy: true,
+    updatedAt: true,
+    updatedBy: true,
+    deletedAt: true, // TODO: Differentiate types for each usecase.
+    deletedBy: true,
+}).extend({
+    placeOfBirth: z.object({
+        city: z.string(),
+        state: z.string(),
+        country: z.string()
+    })
+})
+
+export type CreateFolderFormType = z.infer<typeof CreateFolderFormSchema>;

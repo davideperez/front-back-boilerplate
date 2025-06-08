@@ -17,6 +17,8 @@ import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 
 import { PlusCircledIcon } from "@radix-ui/react-icons"
+// import { LineChart } from "lucide-react"
+import { Link } from "react-router-dom"
 
 interface FoldersDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -44,7 +46,11 @@ export function FoldersDataTable<TData, TValue>({ columns, data,}: FoldersDataTa
                     className="max-w-sm"
                 />
                 {/* Create New Item Button */}
-                <Button><PlusCircledIcon /> Crear Nuevo Legajo</Button>
+                <Button asChild>
+                    <Link to="/folder/create">
+                        <PlusCircledIcon /> Crear Nuevo Legajo
+                    </Link>
+                </Button>
             </div>
             {/* Table */}
             <div className="rounded-md border">

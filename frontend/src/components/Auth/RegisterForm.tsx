@@ -1,14 +1,14 @@
 import { z} from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
-import { Form, FormControl, FormDescription, /* FormDescription ,*/ FormField, FormItem, FormLabel } from "../ui/form"
 import { useForm } from "react-hook-form"
+
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
+import { Form, FormControl, FormDescription, /* FormDescription ,*/ FormField, FormItem, FormLabel } from "../ui/form"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card"
 
 import { register } from "@/api/users-api"
 import { registerFormSchema } from "@/schemas/registerFormSchema"
-
 
 type RegisterFormType = z.infer<typeof registerFormSchema>;
 

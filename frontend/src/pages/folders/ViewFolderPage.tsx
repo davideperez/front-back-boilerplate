@@ -1,4 +1,4 @@
-export function FolderPage() {
+export function ViewFolderPage() {
     return (
         <div className="p-4">
             <h1>This an individual Folder</h1>
