@@ -3,7 +3,11 @@ import CreateFolderForm from "@/components/Folders/CreateFolderForm"
 const CreateFolderPage = () => {
 
     return (
-        <CreateFolderForm />
+        <CreateFolderForm 
+            onSuccess={function (): void {
+                throw new Error("Function not implemented.")
+            }} 
+        />
     )
 }
 

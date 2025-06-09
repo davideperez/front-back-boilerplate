@@ -12,6 +12,7 @@ import {
     SidebarGroupContent,
     SidebarRail
 } from "../ui/sidebar";
+import { useLocation } from "react-router-dom";
 
 const items = [
   {
@@ -42,6 +43,8 @@ const items = [
 ]
 
 export default function AppSidebar({ ...props}: React.ComponentProps<typeof Sidebar>) {
+    const location = useLocation()
+    const pathname = location.pathname
     return (
         <Sidebar {...props}>
             <SidebarHeader />
@@ -50,16 +53,19 @@ export default function AppSidebar({ ...props}: React.ComponentProps<typeof Side
                     <SidebarGroupLabel>Gestor de Legajos</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {items.map( (item) => (
-                                <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild>
-                                        <a href={item.url}>
-                                            <item.icon />
-                                            <span>{item.title}</span>
-                                        </a>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
+                            {items.map( (item) => {
+                                const isActive = item.url === pathname;
+                                return (
+                                    <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuButton asChild isActive={isActive} >
+                                            <a href={item.url}>
+                                                <item.icon />
+                                                <span>{item.title}</span>
+                                            </a>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                )
+                            })}
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

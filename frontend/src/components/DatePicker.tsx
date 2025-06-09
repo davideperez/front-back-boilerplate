@@ -4,7 +4,9 @@ import { useState } from "react";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "./ui/button";
 import { Calendar } from "./ui/calendar";
-import transformDate from "@/lib/transformDate";
+import { format} from 'date-fns'
+import { es } from "date-fns/locale";
+
 
 function DatePicker () {
     const [date, setDate] = useState<Date>()
@@ -19,10 +21,9 @@ function DatePicker () {
                 >
                     <CalendarIcon />
                     { date ? 
-                        transformDate(JSON.stringify(date))
-                        // format(date, "PPP") 
+                        format(date, "PPP", { locale: es}) 
                         : 
-                        <span>Elija una fecha</span> 
+                        <span>Seleccionar fecha</span> 
                     }
                 </Button>
             </PopoverTrigger>

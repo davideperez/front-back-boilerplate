@@ -178,6 +178,8 @@ export class ExpressFoldersController {
 
             // 4.2 Handle validation exception.
             if (!validatedFolderData.success) {
+                const formatedErrors = validatedFolderData.error.format()
+                console.log("This are the errors of the 422: ", formatedErrors)
                 res.status(422).json({ errors: validatedFolderData.error.format()}); // 422 Unprocessable Entity
                 return;
             }

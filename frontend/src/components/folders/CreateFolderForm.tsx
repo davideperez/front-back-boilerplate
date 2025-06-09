@@ -1,15 +1,22 @@
 
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { Calendar } from '../ui/calendar'
+import { Separator } from "../ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, Form } from "../ui/form";
+import { SelectTrigger, SelectValue, SelectContent, SelectItem, Select } from "../ui/select";
 
+import { cn } from "@/lib/utils";
 import { createFolder } from "@/api/folders-api";
-import { CreateFolderFormSchema, CreateFolderFormType } from "@/types/folder";
-import DatePicker from "../DatePicker";
+import { CreateFolderFormSchema } from "@/types/folder";
+import { Popover, PopoverTrigger, PopoverContent } from "@radix-ui/react-popover";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 
 interface CreateFolderProps {
     onSuccess: () => void
@@ -20,12 +27,13 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
     // Form state,
     // form validations, 
     // and Form initial values.
-    const form = useForm<CreateFolderFormType>({
+    const form = useForm<z.infer<typeof CreateFolderFormSchema>>({
         resolver: zodResolver(CreateFolderFormSchema),
         defaultValues: {
             firstName: '',
             lastName: '',
             birthDate: new Date(),
+            profilePicture: '',
             placeOfBirth: {
                 city: '',
                 state: '',
@@ -43,13 +51,19 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
     })
     
     /* 2 onSubmit */
-    const onSubmit = form.handleSubmit((values: CreateFolderFormType) => {
+    const onSubmit = form.handleSubmit((values: z.infer<typeof CreateFolderFormSchema>) => {
         console.log("This is onSubmit values: ", values)
-        createFolder(values)
+        const createNewFolderRequest = {
+            ...values, 
+            createdBy: "David" // TODO: Change this with the logged user id
+        }
+        console.log("This is ")
+
+        createFolder(createNewFolderRequest)
         onSuccess()
     })
     
-    const formItemClass = "flex flex-col gap-y-2"
+    const formItemClass = "flex flex-col gap-y-2 w-1/2"
     const h1 = "scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance"
 
     return (
@@ -114,14 +128,61 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                     ({field}) => (
                                         <FormItem className={formItemClass}>
                                             <FormLabel>Fecha de Nacimiento</FormLabel>
-                                            <FormControl>
-                                                {/* <Input type="text" {...field}/> */}
-                                                <DatePicker />
-                                            </FormControl>
-                                            {
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <FormControl>
+                                                        <Button
+                                                            variant={"outline"}
+                                                            className={cn(
+                                                                "w-[240px] pl-3 text-left font-normal",
+                                                                !field.value && "text-muted-foreground"
+                                                            )}
+                                                        >
+                                                            {field.value ? (
+                                                                format(field.value, "PPP")
+                                                            ) : (
+                                                                <span>Pick a date</span>
+                                                            )}
+                                                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                        </Button>
+                                                    </FormControl>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0" align="start">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={field.value}
+                                                        onSelect={field.onChange}
+                                                        disabled={(date) =>
+                                                            date > new Date() || date < new Date("1900-01-01")
+                                                        }
+                                                        captionLayout="dropdown"
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                             {
                                                 form.formState.errors?.birthDate &&
                                                     <FormDescription>
                                                         {String(form.formState.errors?.birthDate.message || '')}
+                                                    </FormDescription>
+                                            }
+                                        </FormItem>
+                                    )
+                                }
+                            />
+                            {/* profilePicture */}
+                            <FormField
+                                name='profilePicture'
+                                render={
+                                    ({field}) => (
+                                        <FormItem className={formItemClass}>
+                                            <FormLabel htmlFor="picture" >Foto de Legajo</FormLabel>
+                                            <FormControl>
+                                                <Input id="picture" type="file" {...field}/>
+                                            </FormControl>
+                                            {
+                                                form.formState.errors?.profilePicture &&
+                                                    <FormDescription>
+                                                        {String(form.formState.errors?.profilePicture?.message || '')}
                                                     </FormDescription>
                                             }
                                         </FormItem>
@@ -195,9 +256,17 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                     ({field}) => (
                                         <FormItem className={formItemClass}>
                                             <FormLabel>Sexo</FormLabel>
-                                            <FormControl>
-                                                <Input type="text" {...field}/>
-                                            </FormControl>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Select a verified email to display" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="M">Hombre</SelectItem>
+                                                    <SelectItem value="F">Mujer</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                             {
                                                 form.formState.errors?.sex &&
                                                     <FormDescription>
@@ -275,9 +344,37 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                     ({field}) => (
                                         <FormItem className={formItemClass}>
                                             <FormLabel>Fecha de Vencimiento del Documento de Identidad</FormLabel>
-                                            <FormControl>
-                                                <Input type="text" {...field}/>
-                                            </FormControl>
+                                            <Popover>
+                                                <PopoverTrigger asChild>
+                                                    <FormControl>
+                                                        <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-[240px] pl-3 text-left font-normal",
+                                                            !field.value && "text-muted-foreground"
+                                                        )}
+                                                        >
+                                                        {field.value ? (
+                                                            format(field.value, "PPP")
+                                                        ) : (
+                                                            <span>Pick a date</span>
+                                                        )}
+                                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                                        </Button>
+                                                    </FormControl>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0" align="start">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={field.value}
+                                                        onSelect={field.onChange}
+                                                        disabled={(date) =>
+                                                            /* date < new Date() ||  */date < new Date("1900-01-01")
+                                                        }
+                                                        captionLayout="dropdown"
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
                                             {
                                                 form.formState.errors?.identityDocumentExpirationDate &&
                                                     <FormDescription>
@@ -288,6 +385,7 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                     )
                                 }
                             />
+                            <Separator />
                             {/* school  */}
                             <FormField
                                 name='school'
