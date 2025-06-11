@@ -2,7 +2,7 @@ import AppSidebar from "./AppSidebar";
 
 import { Outlet, /* useLocation */ } from "react-router-dom";
 
-
+import { Toaster } from "@/components/ui/sonner"
 
 import { Separator } from "@/components/ui/separator"
 
@@ -20,6 +20,7 @@ export default function MainLayout() {
     // console.log('Location: ', location)
     return (
         <SidebarProvider className="w-screen">
+            <Toaster position="bottom-right" richColors />
             <AppSidebar />
             <SidebarInset 
                 className="
@@ -62,4 +63,3 @@ export default function MainLayout() {
         </SidebarProvider>
     )
 }
-

@@ -157,6 +157,9 @@ export class ExpressFoldersController {
             // 1 Extract the data
             const folderData = req.body;
             const folderDataImage = req.file?.buffer; // Get the image from the request
+            console.log("===============================================================> This is req.body: ", req.body)
+            // console.log("===============================================================> This is req.file?: ", req.file?)
+            console.log("===============================================================> This is req.file?.buffer: ", req.file?.buffer)
 
             // 2 Complete the profilePicture property with the string of the Cloudinary URL, or null.
             if (folderDataImage) {

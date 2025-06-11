@@ -6,8 +6,24 @@ import { FoldersDataTable } from '@/components/Folders/FoldersDataTable'
 import { folderColumns } from '@/components/Folders/FoldersColumns'
 import { ColumnDef } from '@tanstack/react-table'
 import { FolderTableRowType } from '@/types/folder'
+import { toast } from 'sonner'
+
+const provisoryQuery: {
+    sortBy: "firstName" | "lastName" | "createdAt" | "updatedAt"
+    search?: string
+    sortOrder?: "asc" | "desc"
+    page?: number
+    pageSize?: number
+} = { 
+    sortBy: 'firstName',
+    search: '', 
+    sortOrder: 'asc', 
+    page: 1, 
+    pageSize: 50 
+}
 
 export function FoldersPage() {
+
     const dispatch = useDispatch<AppDispatch>()
 
     const {
@@ -18,25 +34,24 @@ export function FoldersPage() {
     } = useSelector((state: RootState) => state.folders)
 
     useEffect(() => {
-        dispatch(fetchFoldersThunk({ search: '', sortBy: 'firstName', sortOrder: 'asc', page: 1, pageSize: 3 }))
+        dispatch(fetchFoldersThunk(provisoryQuery))
     }, [dispatch])
     
     const onDelete = useCallback(
         async (folderId: string, userId: string) => {
-            alert("This is the delete. folderId: "+ folderId +  " userId: " + userId)
-
             if (!folderId) {
                   return // shouldnt some
             }
 
             try {
-                await dispatch(deleteFolderThunk({ folderId: folderId, userId: "David"})).unwrap()
+                const deletedFolder = await dispatch(deleteFolderThunk({ folderId: folderId, userId: "David"})).unwrap()
+                console.log("Deleted Folder: ", deletedFolder)
                 
-                await dispatch(fetchFoldersThunk({ search: '', sortBy: 'firstName', sortOrder: 'asc', page: 1, pageSize: 3 })).unwrap()
-                // 
+                await dispatch(fetchFoldersThunk(provisoryQuery)).unwrap()
+                toast.success(`El legajo de ${deletedFolder.firstName} ${deletedFolder.lastName} fue eliminado correctamente`) // TODO: IMPORTANT: Prompt the user if he is sure. 
             } catch (error) {
                 console.error("Error during deletion or fetch:", error);
-                alert("Hubo un error al intentar eliminar el Legajo.")
+                toast.warning("Hubo un error al intentar eliminar el Legajo.")
             }
         },
         [dispatch]

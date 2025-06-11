@@ -4,22 +4,33 @@ import { z } from "zod";
 
 export const FolderDetailSchema = z.object({
     _id: z.string().optional(),
-    firstName: z.string(),
-    lastName: z.string(),
-    birthDate: z.coerce.date(),
-    profilePicture: z.string().optional(),
-    placeOfBirth: z.object({
-        city: z.string().optional(),
-        state: z.string().optional(),
-        country: z.string().optional()
+    firstName: z.string().min(1, "El nombre es requerido."),
+    lastName: z.string().min(1, "El apellido es requerido."),
+    birthDate: z.coerce.date({
+    invalid_type_error: "La fecha de nacimiento es requerida."
+  }),
+    profilePicture: z
+        .any()
+        .refine(file => file instanceof File, {
+                message: "La foto de Legajo es requerida.",
+            }
+        ), // TODO: IMPORTANT: Limit this to 4mb
+    city: z.string().min(1, "La ciudad de nacimiento es requerida.") ,
+    state: z.string().min(1, "La provincia o estado de nacimiento es requerido") ,
+    country: z.string().min(1, "El país de nacimiento es requerido.") ,
+    sex: z.enum(["M", "F"], {
+        errorMap: () => ({ message: "El sexo es requerido."})
     }),
-    sex: z.enum(["M", "F"]),
-    nationality: z.string().optional(),
-    identityDocumentType: z.string().optional(),
-    identityDocumentNumber: z.string().optional(),
-    identityDocumentExpirationDate: z.coerce.date().optional(),
-    school: z.string().optional(),
-    schoolYear: z.string().optional(),
+    nationality: z.string().min(1, "El nombre es requerido.") ,
+    identityDocumentType: z.enum(["DNI", "Pasaporte", "Cedula de Identidad", "En Proceso"], { // TODO: IMPORTANT Implement this enum in the backend.
+        errorMap: () => ({ message: "El tipo de identificación es requerido."})
+    }),
+    identityDocumentNumber: z.string().min(1, "El número de identificación es requerido."), // TODO: IMPORTANT: IF the document is in process dont show this field. 
+    identityDocumentExpirationDate: z.coerce.date({
+        invalid_type_error: "La fecha de expiración del documento es requerida"
+    }) /* .optional() */,
+    school: z.string().min(1, "El nombre es requerido."),
+    schoolYear: z.string().min(1, "El nombre es requerido."),
     createdAt: z.date().optional(),
     createdBy: z.string().optional(),
     updatedAt: z.date().optional(),
@@ -85,6 +96,9 @@ export const CreateFolderFormSchema = FolderDetailSchema.pick({
     lastName: true,
     birthDate: true,
     profilePicture: true,
+    city: true,
+    state: true,
+    country: true,
     sex: true,
     nationality: true,
     identityDocumentType: true,
@@ -98,12 +112,6 @@ export const CreateFolderFormSchema = FolderDetailSchema.pick({
     updatedBy: true,
     deletedAt: true, // TODO: Differentiate types for each usecase.
     deletedBy: true,
-}).extend({
-    placeOfBirth: z.object({
-        city: z.string(),
-        state: z.string(),
-        country: z.string()
-    })
 })
 
 export type CreateFolderFormType = z.infer<typeof CreateFolderFormSchema>;

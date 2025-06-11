@@ -45,6 +45,7 @@ const items = [
 export default function AppSidebar({ ...props}: React.ComponentProps<typeof Sidebar>) {
     const location = useLocation()
     const pathname = location.pathname
+
     return (
         <Sidebar {...props}>
             <SidebarHeader />

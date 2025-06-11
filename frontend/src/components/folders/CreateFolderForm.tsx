@@ -1,47 +1,52 @@
+// TODO: Add memory of the form being filled through pages refreshs.
 
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Calendar } from '../ui/calendar'
-import { Separator } from "../ui/separator";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, Form } from "../ui/form";
-import { SelectTrigger, SelectValue, SelectContent, SelectItem, Select } from "../ui/select";
-
 import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { ChangeEvent } from "react";
+import { CalendarIcon } from "lucide-react";
 import { createFolder } from "@/api/folders-api";
 import { CreateFolderFormSchema } from "@/types/folder";
-import { Popover, PopoverTrigger, PopoverContent } from "@radix-ui/react-popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
+
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
+import { Calendar } from '../ui/calendar';
+import { Separator } from "../ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { SelectTrigger, SelectValue, SelectContent, SelectItem, Select } from "../ui/select";
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, Form } from "../ui/form";
+import { toast } from "sonner";
 
 interface CreateFolderProps {
     onSuccess: () => void
 }
 
+type CreateFolderFormData = z.infer<typeof CreateFolderFormSchema>
+
 const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
+
     /* 1 Implementation of React Hook Form  */
     // Form state,
     // form validations, 
     // and Form initial values.
-    const form = useForm<z.infer<typeof CreateFolderFormSchema>>({
+
+    const form = useForm<CreateFolderFormData>({
         resolver: zodResolver(CreateFolderFormSchema),
         defaultValues: {
             firstName: '',
             lastName: '',
             birthDate: new Date(),
-            profilePicture: '',
-            placeOfBirth: {
-                city: '',
-                state: '',
-                country: '',
-            },
+            profilePicture: undefined,
+            city: '',
+            state: '',
+            country: '',
             sex: 'M',
             nationality: '',
-            identityDocumentType: '',
+            identityDocumentType: 'DNI',
             identityDocumentNumber: '',
             identityDocumentExpirationDate: new Date(),
             school: '',
@@ -51,27 +56,57 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
     })
     
     /* 2 onSubmit */
-    const onSubmit = form.handleSubmit((values: z.infer<typeof CreateFolderFormSchema>) => {
+    const onSubmit = form.handleSubmit(async (values: z.infer<typeof CreateFolderFormSchema>) => {
         console.log("This is onSubmit values: ", values)
-        const createNewFolderRequest = {
-            ...values, 
-            createdBy: "David" // TODO: Change this with the logged user id
-        }
-        console.log("This is ")
+        /* Complete the form info with the internal necessary data */
 
-        createFolder(createNewFolderRequest)
-        onSuccess()
+        const formData = new FormData()
+
+        Object.entries(values).forEach(
+            ([key, value]) => {
+                /* Images */
+                if (key === 'profilePicture' && value instanceof File) {
+                    formData.append("image", value);
+                /* Anidated object property */
+                } else if (typeof value === "object" && value !== null && !(value instanceof Date)) {
+                    Object.entries(value).forEach(
+                        ([subKey, subValue]) => {
+                            formData.append(`${key}.${subKey}`, String(subValue ?? ""))
+                        }
+                    )
+                /* Dates */
+                } else if (value instanceof Date) {
+                    formData.append(key, value.toISOString())
+                /* Strings */
+                } else if (value !== undefined && value !== null) {
+                    formData.append(key, String(value))
+                }
+            }
+        )
+
+        try {
+            await createFolder(formData)
+            toast.success("El legajo fue creado correctamente!")
+            onSuccess()
+        } catch {
+            /* Toast Exception*/
+            toast.warning("Error en la creación del legajo")
+        }
+
     })
     
+    /* Tailwind Classes */
     const formItemClass = "flex flex-col gap-y-2 w-1/2"
-    const h1 = "scroll-m-20 text-center text-4xl font-extrabold tracking-tight text-balance"
+    const h1 = "ml-8 mt-8 scroll-m-20 text-start text-4xl font-extrabold tracking-tight text-balance"
+    // const h2 = "scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"
+    const h3 = "scroll-m-20 text-2xl font-semibold tracking-tight"
 
     return (
-        <div className="flex justify-center">
+        <div className="flex flex-col justify-start">
+            <h1 className={h1}>Nuevo Legajo</h1>
             <Card className="m-8 px-12 py-10 w-1/2">
                 <CardHeader>
                     <CardTitle>
-                        <h1 className={h1}>Nuevo Legajo</h1>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -80,6 +115,7 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                             className="flex flex-col gap-y-8"
                             onSubmit={onSubmit}
                         >
+                            <h3 className={h3}>Información Básica</h3>
                             {/* firstName */}
                             <FormField
                                 name='firstName'
@@ -100,7 +136,6 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                     )
                                 }
                             />
-
                             {/* lastName */}
                             <FormField
                                 name='lastName'
@@ -121,6 +156,68 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                     )
                                 }
                             />
+                            {/* sex  */}
+                            <FormField
+                                name='sex'
+                                render={
+                                    ({field}) => (
+                                        <FormItem className={formItemClass}>
+                                            <FormLabel>Sexo</FormLabel>
+                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Seleccioná una opción" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="M">Hombre</SelectItem>
+                                                    <SelectItem value="F">Mujer</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            {
+                                                form.formState.errors?.sex &&
+                                                    <FormDescription>
+                                                        {String(form.formState.errors?.sex.message || '')}
+                                                    </FormDescription>
+                                            }
+                                        </FormItem>
+                                    )
+                                }
+                            />
+                            {/* profilePicture */}
+                            <FormField
+                                name='profilePicture'
+                                render={
+                                    ({field}) => (
+                                        <FormItem className={formItemClass}>
+                                            <FormLabel htmlFor="picture" >Foto del Legajo</FormLabel>
+                                            <FormControl>
+                                                <Input 
+                                                    id="picture" 
+                                                    type="file" 
+                                                    // maxLength={4194304}
+                                                    ref={field.ref}
+                                                    // {...field}
+                                                    onChange={(e: ChangeEvent<HTMLInputElement>)=> {
+                                                        const file = e.target.files?.[0]
+                                                        if (file) {
+                                                            form.setValue("profilePicture", file)
+                                                        }
+                                                    }}
+                                                />
+                                            </FormControl>
+                                            {
+                                                form.formState.errors?.profilePicture &&
+                                                    <FormDescription>
+                                                        {String(form.formState.errors?.profilePicture?.message || '')}
+                                                    </FormDescription>
+                                            }
+                                        </FormItem>
+                                    )
+                                }
+                            />
+                            <Separator />
+                            <h3 className={h3}>Información de Nacimiento</h3>
                             {/* birthDate */}
                             <FormField
                                 name='birthDate'
@@ -169,26 +266,7 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                     )
                                 }
                             />
-                            {/* profilePicture */}
-                            <FormField
-                                name='profilePicture'
-                                render={
-                                    ({field}) => (
-                                        <FormItem className={formItemClass}>
-                                            <FormLabel htmlFor="picture" >Foto de Legajo</FormLabel>
-                                            <FormControl>
-                                                <Input id="picture" type="file" {...field}/>
-                                            </FormControl>
-                                            {
-                                                form.formState.errors?.profilePicture &&
-                                                    <FormDescription>
-                                                        {String(form.formState.errors?.profilePicture?.message || '')}
-                                                    </FormDescription>
-                                            }
-                                        </FormItem>
-                                    )
-                                }
-                            />
+                            
                             {/* country */}
                             <FormField
                                 name='country'
@@ -200,9 +278,9 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                                 <Input type="text" {...field}/>
                                             </FormControl>
                                             {
-                                                form.formState.errors?.placeOfBirth?.country &&
+                                                form.formState.errors?.country &&
                                                     <FormDescription>
-                                                        {String(form.formState.errors?.placeOfBirth?.country.message || '')}
+                                                        {String(form.formState.errors?.country.message || '')}
                                                     </FormDescription>
                                             }
                                         </FormItem>
@@ -220,9 +298,9 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                                 <Input type="text" {...field}/>
                                             </FormControl>
                                             {
-                                                form.formState.errors?.placeOfBirth?.state &&
+                                                form.formState.errors?.state &&
                                                     <FormDescription>
-                                                        {String(form.formState.errors?.placeOfBirth?.state.message || '')}
+                                                        {String(form.formState.errors?.state.message || '')}
                                                     </FormDescription>
                                             }
                                         </FormItem>
@@ -240,43 +318,18 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                                 <Input type="text" {...field}/>
                                             </FormControl>
                                             {
-                                                form.formState.errors?.placeOfBirth?.city &&
+                                                form.formState.errors?.city &&
                                                     <FormDescription>
-                                                        {String(form.formState.errors?.placeOfBirth?.city.message || '')}
+                                                        {String(form.formState.errors?.city.message || '')}
                                                     </FormDescription>
                                             }
                                         </FormItem>
                                     )
                                 }
                             />
-                            {/* sex  */}
-                            <FormField
-                                name='sex'
-                                render={
-                                    ({field}) => (
-                                        <FormItem className={formItemClass}>
-                                            <FormLabel>Sexo</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                                <FormControl>
-                                                    <SelectTrigger>
-                                                        <SelectValue placeholder="Select a verified email to display" />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="M">Hombre</SelectItem>
-                                                    <SelectItem value="F">Mujer</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            {
-                                                form.formState.errors?.sex &&
-                                                    <FormDescription>
-                                                        {String(form.formState.errors?.sex.message || '')}
-                                                    </FormDescription>
-                                            }
-                                        </FormItem>
-                                    )
-                                }
-                            />
+                            <Separator />
+                            <h3 className={h3}>Documento de Identidad</h3>
+                            
                             {/* nationality  */}
                             <FormField
                                 name='nationality'
@@ -304,9 +357,22 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                     ({field}) => (
                                         <FormItem className={formItemClass}>
                                             <FormLabel>Tipo de Documento</FormLabel>
-                                            <FormControl>
-                                                <Input type="text" {...field}/>
-                                            </FormControl>
+                                            <Select 
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Seleccioná una opción" />
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    <SelectItem value="DNI">DNI</SelectItem>
+                                                    <SelectItem value="Pasaporte">Pasaporte</SelectItem>
+                                                    <SelectItem value="CI">Cédula de Identidad</SelectItem>
+                                                    <SelectItem value="inProgress">En proceso</SelectItem>
+                                                </SelectContent>
+                                            </Select>
                                             {
                                                 form.formState.errors?.identityDocumentType &&
                                                     <FormDescription>
@@ -343,7 +409,7 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                 render={
                                     ({field}) => (
                                         <FormItem className={formItemClass}>
-                                            <FormLabel>Fecha de Vencimiento del Documento de Identidad</FormLabel>
+                                            <FormLabel>Vencimiento del Documento</FormLabel>
                                             <Popover>
                                                 <PopoverTrigger asChild>
                                                     <FormControl>
@@ -386,6 +452,7 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                 }
                             />
                             <Separator />
+                            <h3 className={h3}>Información de Escolaridad</h3>
                             {/* school  */}
                             <FormField
                                 name='school'
@@ -426,7 +493,7 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
                                     )
                                 }
                             />
-                            <Button>Crear Legajo</Button>
+                            <Button className="mt-4 min-w-32 w-1/5">Crear Legajo</Button>
                         </form>
                     </Form>
                 </CardContent>

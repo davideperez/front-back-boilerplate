@@ -1,12 +1,13 @@
 import CreateFolderForm from "@/components/Folders/CreateFolderForm"
+import { useNavigate } from "react-router-dom";
 
 const CreateFolderPage = () => {
-
+    const navigate = useNavigate()
     return (
         <CreateFolderForm 
-            onSuccess={function (): void {
-                throw new Error("Function not implemented.")
-            }} 
+           onSuccess={() => {
+                navigate("/folders");
+            }}
         />
     )
 }

@@ -1,11 +1,13 @@
-import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import './index.css';
-import { ThemeProvider } from './components/ui/theme-provider';
+import React from 'react';
 
 import AppRoutes from './routes/_index';
-import { Provider } from 'react-redux';
+import { BrowserRouter } from 'react-router-dom';
+
 import { store } from './store/store';
+import { Provider } from 'react-redux';
+
+import { ThemeProvider } from './components/ui/theme-provider';
 
 const App: React.FC = () => {
 	return (
