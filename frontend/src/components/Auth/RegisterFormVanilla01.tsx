@@ -31,11 +31,9 @@ export const RegisterFormReactHookForm: React.FC = () => {
     // Form submit handler
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // console.log('Form sent: ', formData);
     }
 
     useEffect(() => {
-        // console.log('Form data: ', formData);
     }, [formData]);
 
 return (

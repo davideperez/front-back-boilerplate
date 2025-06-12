@@ -10,7 +10,6 @@ import { es } from "date-fns/locale";
 
 function DatePicker () {
     const [date, setDate] = useState<Date>()
-    console.log("This is date: ", date)
     return (
         <Popover>
             <PopoverTrigger asChild>

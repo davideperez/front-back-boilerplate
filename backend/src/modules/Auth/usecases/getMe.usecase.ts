@@ -10,7 +10,7 @@ export class GetMeUseCase {
   async execute(id: string): Promise<void>   {
     // 1 Validate the id 
     if (!id) {
-      console.error('Invalid user') //TODO: Check if this error is well handled.
+      console.error('Invalid user') //TODO: ERROR HANDLING: Check if this error is well handled.
       throw new Error('Invalid user')
     } 
 

@@ -16,8 +16,6 @@ import { ModeToggle } from "../ui/mode-toggle";
 
 
 export default function MainLayout() {
-    // const location = useLocation()
-    // console.log('Location: ', location)
     return (
         <SidebarProvider className="w-screen">
             <Toaster position="bottom-right" richColors />

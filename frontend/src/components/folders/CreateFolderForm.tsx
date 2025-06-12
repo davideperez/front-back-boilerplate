@@ -1,4 +1,4 @@
-// TODO: Add memory of the form being filled through pages refreshs.
+// TODO: Decide if session storage is better than localstorge
 
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect } from "react";
 import { CalendarIcon } from "lucide-react";
 import { createFolder } from "@/api/folders-api";
 import { CreateFolderFormSchema } from "@/types/folder";
@@ -34,9 +34,26 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
     // form validations, 
     // and Form initial values.
 
+    useEffect(() => {
+        const subscription = form.watch(
+            (value) => {
+                try {
+                    localStorage.setItem('create-folder-form', JSON.stringify(value))
+                } catch (error) {
+                    console.error("Error saving form data to localStorage", error)
+                }
+            }
+        )
+        return () => subscription.unsubscribe();
+    })
+
+    const savedFormData = typeof window !== 'undefined' ? localStorage.getItem('create-folder-form') : null;
+
     const form = useForm<CreateFolderFormData>({
         resolver: zodResolver(CreateFolderFormSchema),
-        defaultValues: {
+        defaultValues: savedFormData
+        ? JSON.parse(savedFormData)
+        : {
             firstName: '',
             lastName: '',
             birthDate: new Date(),
@@ -57,7 +74,6 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
     
     /* 2 onSubmit */
     const onSubmit = form.handleSubmit(async (values: z.infer<typeof CreateFolderFormSchema>) => {
-        console.log("This is onSubmit values: ", values)
         /* Complete the form info with the internal necessary data */
 
         const formData = new FormData()
@@ -86,6 +102,7 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
 
         try {
             await createFolder(formData)
+            localStorage.removeItem('create-folder-form')
             toast.success("El legajo fue creado correctamente!")
             onSuccess()
         } catch {

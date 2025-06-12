@@ -71,7 +71,7 @@ export const usersController = new ExpressUsersController({
   deleteUserByIdUseCase: deleteUserByIdUseCase,
 })
 
-// ---------------- Auth ----------------  //
+// --------------------------------- Auth ---------------------------------  //
 
 // Servicios (Aplication)
 

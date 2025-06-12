@@ -95,7 +95,7 @@ export class ExpressAuthController {
           httpOnly: true, 
           secure: isProduction,
           sameSite: isProduction ? "strict" : "lax", 
-          domain: isProduction ? "mydomain.com" : undefined, // TODO: Implement this when Refresh Token endpoint is ready.
+          domain: isProduction ? "mydomain.com" : undefined, // TODO: AUTHENTICATION: Implement this when Refresh Token endpoint is ready.?
           path: "/v1/users/refresh-token"
         });
 

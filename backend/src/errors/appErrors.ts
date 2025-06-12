@@ -2,7 +2,7 @@
 
 import { errorMap, ErrorTypes } from "../modules/infrastructure/errors/errorTypes";
 
-// TODO: This, along with the errorHandler.ts was a Gepetto Suggestion to implement an review.
+// TODO: ERROR HANDLING: This, along with the errorHandler.ts was a Gepetto Suggestion to implement an review.
 export class AppError extends Error {
   public readonly statusCode: number;
   public readonly isOperational: boolean;

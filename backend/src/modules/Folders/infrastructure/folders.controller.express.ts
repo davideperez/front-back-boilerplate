@@ -4,7 +4,7 @@ import { Request, Response } from 'express'
 import { GetFolderByIdUseCase } from '../usecases/getFolderById.usecase'
 
 import { GetAllFoldersUseCase } from '../usecases/getAllFolders.usecase'
-import { GetAllFoldersQuerySchema } from '../domain/dtos/read/getAllFoldersResponse.dto'
+import { GetAllFoldersQueryDTO, GetAllFoldersQuerySchema, GetFoldersFromDBRequestDTO, GetFoldersFromDBResponseDTO, validSortFields } from '../domain/dtos/read/getAllFoldersResponse.dto'
 
 import { CreateFolderUseCase } from '../usecases/createFolder.usecase'
 
@@ -88,7 +88,7 @@ export class ExpressFoldersController {
             const skip = (page - 1) * pageSize
             const limit = pageSize
 
-            const foldersFromDBRequest = {
+            const foldersFromDBRequest: GetFoldersFromDBRequestDTO = {
                 search: search,
                 sortBy: sortBy,
                 sortOrder: sortOrder,
@@ -96,7 +96,7 @@ export class ExpressFoldersController {
                 limit: limit,
             }
             // 4 Call the usecase
-            const queryResponse = await this.getAllFoldersUseCase.execute(foldersFromDBRequest)
+            const queryResponse: GetFoldersFromDBResponseDTO  = await this.getAllFoldersUseCase.execute(foldersFromDBRequest)
 
             // 4.1 Handle usecase exception.
             if (!queryResponse?.folders) {
@@ -104,52 +104,30 @@ export class ExpressFoldersController {
                 return;
             }
 
-            // 4.2 Handle empty folders exception.
-            if (queryResponse.folders.length === 0) {
-                res.status(200).json({ 
-                    error: 'No folders found',
-                    data: {
-                        items: [],
-                        pagination: {
-                            page: 1,
-                            pageSize: pageSize,
-                            totalPages: 1,
-                            totalItems: 0,
-                        }    
-                    }
-                });
-                return;
-            }
-
             // 5 Build the response
-            const totalItemsCount = queryResponse.totalItemsCount
+            const totalItemsCount = queryResponse.totalItemsCount ?? 0;
 
             // Round the total pages up if the division gives you zero.
             const totalPages = Math.ceil(totalItemsCount / pageSize)
 
             // 6 Sends Response
-            res
-            .status(200)
-            .json({
-                message: 'Folders retrieved successfully.',
+            res.status(200).json({
+                message: queryResponse.folders.length === 0
+                    ? "No folders found"
+                    :'Folders retrieved successfully.',
                 data: {
                     items: queryResponse.folders,
                     pagination: {
-                        page: page,
-                        pageSize: pageSize,
-                        totalPages: totalPages,
+                        page,
+                        pageSize,
+                        totalPages,
                         totalItems: queryResponse.totalItemsCount,
                     }
                 }
             })
         } catch (err: any) {
             console.error(`Error Getting All the Folders: ${err.message}`);
-            res
-            .status(500)
-            .json({ // TODO: Review if it is ok to send this empty data here.
-                error: err.message,
-                data: null
-            })
+            res.status(500).json({error: err.message })
         }
     }
     httpCreateFolder = async (req: Request, res: Response): Promise<void> => {
@@ -157,9 +135,6 @@ export class ExpressFoldersController {
             // 1 Extract the data
             const folderData = req.body;
             const folderDataImage = req.file?.buffer; // Get the image from the request
-            console.log("===============================================================> This is req.body: ", req.body)
-            // console.log("===============================================================> This is req.file?: ", req.file?)
-            console.log("===============================================================> This is req.file?.buffer: ", req.file?.buffer)
 
             // 2 Complete the profilePicture property with the string of the Cloudinary URL, or null.
             if (folderDataImage) {
@@ -182,7 +157,6 @@ export class ExpressFoldersController {
             // 4.2 Handle validation exception.
             if (!validatedFolderData.success) {
                 const formatedErrors = validatedFolderData.error.format()
-                console.log("This are the errors of the 422: ", formatedErrors)
                 res.status(422).json({ errors: validatedFolderData.error.format()}); // 422 Unprocessable Entity
                 return;
             }

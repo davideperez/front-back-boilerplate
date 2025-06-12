@@ -7,14 +7,8 @@ import { softDeleteFolderById } from './softDeleteFolderById.mongo';
 import { folderExistsByFirstAndLastName } from './folderExistsByFirstAndLastName.mongo';
 
 export class FoldersMongoRepository implements FoldersRepository {
-  // TODO: Revisar el tipo de folderDB y de client.
-  // Dejarlo como para que se pueda usar cualquier cliente de mongoDB e incluso un mock
+  // TODO: SYNTHAX: Review if something is missing here and if so, why.
 
-  // private folderDB: typeof FolderDB;
-
-  // constructor(client: typeof FolderDB) {
-  //     this.folderDB = client; 
-  // }
   createFolder = createFolder;
   getFolderById = getFolderById;
   getFolders = getFolders;

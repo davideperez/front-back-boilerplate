@@ -24,7 +24,7 @@ export class LoginUseCase {
     // 1 Validate user inputted data
     const userSchema = LoginDtoSchema.safeParse(user)
   
-    //TODO: Esta validacion va en el controller.
+    //TODO: VALIDATION: Does this validation goes in the controller?
     if (!userSchema.success) {
       console.error('Invalid errors: ', userSchema.error.issues);
       throw new Error(`Invalid user: ${JSON.stringify(userSchema.error.issues)}`)

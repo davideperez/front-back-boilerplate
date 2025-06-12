@@ -45,7 +45,6 @@ export function FoldersPage() {
 
             try {
                 const deletedFolder = await dispatch(deleteFolderThunk({ folderId: folderId, userId: "David"})).unwrap()
-                console.log("Deleted Folder: ", deletedFolder)
                 
                 await dispatch(fetchFoldersThunk(provisoryQuery)).unwrap()
                 toast.success(`El legajo de ${deletedFolder.firstName} ${deletedFolder.lastName} fue eliminado correctamente`) // TODO: IMPORTANT: Prompt the user if he is sure. 

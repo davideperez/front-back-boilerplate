@@ -1,6 +1,7 @@
 import { FolderSchema } from '../../folders.entity';
 import { z } from 'zod';
 
+//-------------------- 1 -------------------------//
 export const GetFoldersFromDBResponseSchema = z.object({
     folders: z.array(FolderSchema),
     totalItemsCount: z.number(),
@@ -8,9 +9,11 @@ export const GetFoldersFromDBResponseSchema = z.object({
 
 export type GetFoldersFromDBResponseDTO = z.infer<typeof GetFoldersFromDBResponseSchema>;
 
-// TODO: Should the optionsl here be optional? re evalute this.
+//-------------------- 2 -------------------------//
 
-const validSortFields = ['firstName', 'lastName', 'createdAt', 'updatedAt'] as const
+// TODO: VALIDATION: Should the optionsl here be optional? re evalute this. How strict should it be?
+
+export const validSortFields = ['firstName', 'lastName', 'createdAt', 'updatedAt'] as const
 
 export const GetFoldersFromDBRequestSchema = z.object({
     search: z.string().optional(),
@@ -21,6 +24,10 @@ export const GetFoldersFromDBRequestSchema = z.object({
 });
 
 export type GetFoldersFromDBRequestDTO = z.infer<typeof GetFoldersFromDBRequestSchema>;
+
+
+
+//-------------------- 3 -------------------------//
 
 export const GetAllFoldersQuerySchema = z.object({
     page: z

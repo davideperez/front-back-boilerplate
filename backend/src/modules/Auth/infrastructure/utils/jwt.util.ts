@@ -10,7 +10,7 @@ function checkJWTSecret () {
 
 export class JwtUtil {
 
-  // TODO: Implement a secret by user, instead of a general secret.
+  // TODO: AUTHENTICATION: ImpIlement a secret by user, instead of a general secret.
   
   private static  secret: string = checkJWTSecret();
   
