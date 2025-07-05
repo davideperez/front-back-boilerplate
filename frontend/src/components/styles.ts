@@ -1,0 +1,13 @@
+
+export const formItemClass = "flex flex-col gap-y-2 w-1/2"
+export const h1 = "ml-8 mt-8 scroll-m-20 text-start text-4xl font-extrabold tracking-tight text-balance"
+export const h2 = "scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"
+export const h3 = "scroll-m-20 text-2xl font-semibold tracking-tight"
+export const h4 = "scroll-m-20 text-xl font-semibold tracking-tight"
+export const p  = "leading-7 [&:not(:first-child)]:mt-6"
+export const blockquote  = "mt-6 border-l-2 pl-6 italic"
+export const list  = "my-6 ml-6 list-disc [&>li]:mt-2"
+export const lead  = "text-muted-foreground text-xl"
+export const large  = "tetext-lg font-semibold"
+export const small  = "text-sm leading-none font-medium"
+export const muted  = "text-muted-foreground text-sm"

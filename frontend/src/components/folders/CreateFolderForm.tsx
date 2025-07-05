@@ -11,15 +11,35 @@ import { CalendarIcon } from "lucide-react";
 import { createFolder } from "@/api/folders-api";
 import { CreateFolderFormSchema } from "@/types/folder";
 
+import { toast } from "sonner";
+
+import { 
+    Form, 
+    FormItem, 
+    FormField, 
+    FormLabel, 
+    FormControl, 
+    FormDescription, 
+} from "../ui/form";
+import { 
+    Card, 
+    CardTitle,
+    CardHeader, 
+    CardContent, 
+} from "../ui/card";
+import { 
+    Select,
+    SelectItem, 
+    SelectValue, 
+    SelectTrigger,
+    SelectContent, 
+} from "../ui/select";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Calendar } from '../ui/calendar';
 import { Separator } from "../ui/separator";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { SelectTrigger, SelectValue, SelectContent, SelectItem, Select } from "../ui/select";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, Form } from "../ui/form";
-import { toast } from "sonner";
+import { formItemClass, h1, h3 } from "../styles";
 
 interface CreateFolderProps {
     onSuccess: () => void
@@ -113,10 +133,6 @@ const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
     })
     
     /* Tailwind Classes */
-    const formItemClass = "flex flex-col gap-y-2 w-1/2"
-    const h1 = "ml-8 mt-8 scroll-m-20 text-start text-4xl font-extrabold tracking-tight text-balance"
-    // const h2 = "scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"
-    const h3 = "scroll-m-20 text-2xl font-semibold tracking-tight"
 
     return (
         <div className="flex flex-col justify-start">

@@ -1,8 +1,28 @@
-import { deleteFolder, getFolders } from "@/api/folders-api";
+import { deleteFolder, getFolder, getFolders } from "@/api/folders-api";
 import { GetFoldersParamsType } from "@/types/folder";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 // 1. Thunk function: A Redux wrapper, for the axios call to fetch folders from the API.
+
+export const fetchFolderThunk = createAsyncThunk(
+    '/folder/:folderId', // Action type prefix used internally by Redux. (doesn't need to match endpoint)
+    async (folderId: string, thunkAPI) => {
+        try {
+            const response = await getFolder(folderId)
+
+            return response
+        } catch (error: unknown) {
+            let message = "Error al traer los legajos"
+
+            if (error instanceof Error) {
+                message = error.message
+            }
+            return thunkAPI.rejectWithValue(message)
+
+        }
+    }
+)
+
 
 export const fetchFoldersThunk = createAsyncThunk(
     '/folders', // Action type prefix used internally by Redux. (doesn't need to match endpoint)

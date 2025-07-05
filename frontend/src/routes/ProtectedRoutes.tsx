@@ -2,7 +2,7 @@ import { Route } from "react-router-dom";
 
 import MainLayout from "@/components/Main/MainLayout";
 
-import { Dashboard } from "@/pages/Dashboard";
+import { Home } from "@/pages/Home";
 
 import { FoldersPage } from "@/pages/folders/FoldersListPage";
 import { ViewFolderPage } from "@/pages/folders/ViewFolderPage";
@@ -16,15 +16,16 @@ import { UsersPage } from "@/pages/users/UsersPage";
 import { SettingsPage } from "@/pages/SettingsPage";
 import CreateFolderPage from "@/pages/folders/CreateFolderPage";
 import EditFolderPage from "@/pages/folders/EditFolderPage";
+import { TestTablePage } from "@/pages/testTable/TestTablePage";
 
 const ProtectedRoutes = () => (
     <>
         <Route path="/" element ={<MainLayout />}>
-            <Route index element ={<Dashboard />} />
+            <Route index element ={<Home />} />
 
             <Route path="folders" element ={<FoldersPage />} />
-            <Route path="folder:id" element ={<ViewFolderPage />} />
-            <Route path="folder:id/edit" element ={<EditFolderPage />} />
+            <Route path="folder/:folderId" element ={<ViewFolderPage />} />
+            <Route path="folder/:folderIdId/edit" element ={<EditFolderPage />} />
             <Route path="folder/create" element ={<CreateFolderPage />} />
             
             <Route path="file:id" element ={<FilePage />} />
@@ -33,6 +34,9 @@ const ProtectedRoutes = () => (
             <Route path="users" element ={<UsersPage />} />
             <Route path="user:id" element ={<UserPage />} />
             <Route path="settings" element ={<SettingsPage />} />
+
+            <Route path="testTable" element ={<TestTablePage />} />
+            
         </Route>
     </>
 )

@@ -27,7 +27,7 @@ const breadcrumbMap: Record<string, string> = {
             return segments.slice(0, i + 1).join('/');
         }
     )
-    // console.log('This is paths: ', paths)
+    console.log('This is paths: ', paths)
 
     return (
         //TODO: Improve this breadcrumb to be really dynamic. 
@@ -37,20 +37,13 @@ const breadcrumbMap: Record<string, string> = {
                 {paths.map((p, i) => (
                     <BreadcrumbItem key={p}>
                         <BreadcrumbLink href={p} >
-                            {breadcrumbMap[p] || p}
+                            {
+                                breadcrumbMap[p] === "/folders" ? "Legajos" : "Error"
+                            }
                         </BreadcrumbLink>
                         {i < paths.length - 1 && <BreadcrumbSeparator className="hidden md:block" key={p}/>}
                     </BreadcrumbItem>
                 ))}
-             {/*    <BreadcrumbItem className="hidden md:block">
-                    <BreadcrumbLink href="#">
-                        Home
-                    </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block"/>
-                <BreadcrumbItem>
-                    <BreadcrumbPage>{paths}</BreadcrumbPage>
-                </BreadcrumbItem> */}
             </BreadcrumbList>
         </Breadcrumb>
     )

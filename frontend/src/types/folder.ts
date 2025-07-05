@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-// Read a Full Folder
-
+// 1 Read a Full Folder
 export const FolderDetailSchema = z.object({
     _id: z.string().optional(),
     firstName: z.string().min(1, "El nombre es requerido."),
@@ -42,8 +41,7 @@ export const FolderDetailSchema = z.object({
 export type FolderDetailType = z.infer<typeof FolderDetailSchema>
 
 
-// Get All Folders Response: Schema and Type
-
+// 2 Get All Folders Response: Schema and Type
 export const getAllFoldersResponseSchema = z.object({
     message: z.string(),
     data: z.object({
@@ -60,8 +58,7 @@ export const getAllFoldersResponseSchema = z.object({
 export type getAllFoldersResponseType = z.infer<typeof getAllFoldersResponseSchema>
 
 
-// Folders Table Row Schema and Type
-
+// 3 Folders Table Row Schema and Type
 export const FolderTableRowSchema = FolderDetailSchema.pick({
     _id: true,
     firstName: true,
@@ -73,9 +70,7 @@ export const FolderTableRowSchema = FolderDetailSchema.pick({
 
 export type FolderTableRowType = z.infer<typeof FolderTableRowSchema>
 
-
-// Request
-
+// 4 Request
 const validSortFields = ['firstName', 'lastName', 'createdAt', 'updatedAt'] as const
 
 export const GetFoldersParamsTypeSchema = z.object({
@@ -88,8 +83,7 @@ export const GetFoldersParamsTypeSchema = z.object({
 
 export type GetFoldersParamsType = z.infer<typeof GetFoldersParamsTypeSchema>
 
-// Create
-
+// 5 Create
 export const CreateFolderFormSchema = FolderDetailSchema.pick({
     _id: true,
     firstName: true,
@@ -115,3 +109,11 @@ export const CreateFolderFormSchema = FolderDetailSchema.pick({
 })
 
 export type CreateFolderFormType = z.infer<typeof CreateFolderFormSchema>;
+
+// 6 Folder Pagination
+export interface PaginationInterface { //TODO: Should this one be implemented with zod?
+    page: number, 
+    pageSize: number,
+    totalPages: number,
+    totalItems: number
+}

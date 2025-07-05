@@ -1,7 +1,7 @@
-import { FolderTableRowType } from '../../types/folder'
-import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { RowActions } from './RowActions'
+import { FolderTableRowType } from '../../types/folder'
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
+import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 // import { Checkbox } from '../ui/checkbox'
 
 interface FoldersColumnProps {
@@ -11,7 +11,7 @@ interface FoldersColumnProps {
 
 const columnHelper = createColumnHelper<FolderTableRowType>()
 
-export const folderColumns = ( { onEdit, onDelete }: FoldersColumnProps): ColumnDef<FolderTableRowType>[] => [
+export const folderColumns = ({ onEdit, onDelete }: FoldersColumnProps): ColumnDef<FolderTableRowType>[] => [
    
     /* 1 Profile Picture */
     {
@@ -32,6 +32,7 @@ export const folderColumns = ( { onEdit, onDelete }: FoldersColumnProps): Column
             className: "flex justify-center items-center min-w-4 max-w-16"
         }
     },
+
     /* 2 Name and Lastname */
     {
         header: 'Legajo',
@@ -41,7 +42,8 @@ export const folderColumns = ( { onEdit, onDelete }: FoldersColumnProps): Column
             className: "flex flex-col justify-center items-start flex-1 basis-0"
         }
     },
-    /* 3 Actualizado el:  */
+    /* 3 Ultima modificación:  */
+    
     /* 4 Row Actions */
     columnHelper.display({
         id: 'actions',
@@ -60,7 +62,6 @@ export const folderColumns = ( { onEdit, onDelete }: FoldersColumnProps): Column
 // --------------------------------------------------- 
 // Legacy Select Code
 // --------------------------------------------------- 
-
 
  /* Select */
     // {

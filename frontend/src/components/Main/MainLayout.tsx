@@ -12,6 +12,7 @@ import {
     SidebarInset,
 } from "../ui/sidebar";
 import { ModeToggle } from "../ui/mode-toggle";
+import AppBreadcrumb from "./AppBreadcrumb";
 // import AppBreadcrumb from "./AppBreadcrumb";
 
 
@@ -31,9 +32,9 @@ export default function MainLayout() {
                     <div className="flex items-center">
                         <SidebarTrigger className="-ml-1" />
                         <Separator orientation="vertical" className="mr-2 h-4"/>
-                        {/* <AppBreadcrumb 
+                        <AppBreadcrumb 
                             location={location}
-                        /> */}
+                        />
                     </div>
                     <div>
                         <ModeToggle />
@@ -48,11 +49,6 @@ export default function MainLayout() {
                         p-4
                     "
                 >
-                    {/* <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                        <div className="aspect-video rounded-xl bg-muted/50" />
-                        <div className="aspect-video rounded-xl bg-muted/50" />
-                        <div className="aspect-video rounded-xl bg-muted/50" />
-                    </div> */}
                     <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min p-4" >
                         <Outlet />  
                     </div>

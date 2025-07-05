@@ -58,7 +58,7 @@ export class ExpressFoldersController {
                 res.status(404).json({ error: 'Folder not found' });
                 return;
             }
-
+            console.log("folders.controller.express.ts > httpGetFolderById > folder: ", folder)
             // 5 Response
             res.status(200).json({ 
                 message: "Folder succesfully retrieved.", 
