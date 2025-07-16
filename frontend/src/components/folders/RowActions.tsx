@@ -8,17 +8,18 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
 import { MoreHorizontal } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 // import { AppDispatch } from '@/store/store'
 // import { useDispatch } from 'react-redux'
 // import { deleteFolderThunk } from '@/store/folders.thunks'
 
 type RowActionsProps = {
   row: Row<FolderTableRowType>,
-  onEdit: (folderId: string) => void
   onDelete: (folderId: string, userId: string) => void
 }
 
-export function RowActions({ row, onEdit, onDelete }: RowActionsProps) {
+export function RowActions({ row, onDelete }: RowActionsProps) {
+    const navigate = useNavigate()
   
   return (
     <DropdownMenu>
@@ -29,7 +30,11 @@ export function RowActions({ row, onEdit, onDelete }: RowActionsProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem 
-          onClick={() => onEdit(row.original)}
+          onClick={ (e) => {
+              e.stopPropagation();
+              console.log("Clicked the edit button for row.original._id: ", row.original._id)
+              navigate(`/folder/${row.original._id}/edit`)
+          }}
         >
           Editar
         </DropdownMenuItem>

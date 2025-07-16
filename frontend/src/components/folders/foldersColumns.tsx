@@ -5,13 +5,12 @@ import { ColumnDef, createColumnHelper } from '@tanstack/react-table'
 // import { Checkbox } from '../ui/checkbox'
 
 interface FoldersColumnProps {
-    onEdit: (folderId: string) => void
     onDelete: (folderId: string, userId: string) => void
 }
 
 const columnHelper = createColumnHelper<FolderTableRowType>()
 
-export const folderColumns = ({ onEdit, onDelete }: FoldersColumnProps): ColumnDef<FolderTableRowType>[] => [
+export const folderColumns = ({ onDelete }: FoldersColumnProps): ColumnDef<FolderTableRowType>[] => [
    
     /* 1 Profile Picture */
     {
@@ -21,7 +20,7 @@ export const folderColumns = ({ onEdit, onDelete }: FoldersColumnProps): ColumnD
             const src = getValue() as string
             return (
                 <div className="flex justify-center items-center w-full">
-                    <Avatar className="h-8 w-8">
+                    <Avatar className="h-12 w-12">
                         <AvatarImage src={src}/>
                         <AvatarFallback>Imagen del Legajo</AvatarFallback>
                     </Avatar>
@@ -43,7 +42,7 @@ export const folderColumns = ({ onEdit, onDelete }: FoldersColumnProps): ColumnD
         }
     },
     /* 3 Ultima modificación:  */
-    
+    //TODO: Add last modified.
     /* 4 Row Actions */
     columnHelper.display({
         id: 'actions',
@@ -51,57 +50,9 @@ export const folderColumns = ({ onEdit, onDelete }: FoldersColumnProps): ColumnD
             <RowActions 
                 row={props.row} 
                 onDelete={onDelete}
-                onEdit={onEdit}
             />,
         meta: {
             className: "flex flex-col justify-center items-center min-w-4 max-w-12"
         }
     })
   ]
-
-// --------------------------------------------------- 
-// Legacy Select Code
-// --------------------------------------------------- 
-
- /* Select */
-    // {
-    //     id: 'select',
-    //     header: ({ table }) => (
-    //         <>
-    //             <Checkbox
-    //                 checked={
-    //                     table.getIsAllPageRowsSelected() ||
-    //                     (table.getIsSomePageRowsSelected() && "indeterminate")
-    //                 }
-    //                 onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //                 aria-label="Select all"
-    //             />
-    //             {/* <input
-    //                 type="checkbox"
-    //                 checked={table.getIsAllPageRowsSelected()}
-    //                 onChange={(e) => table.toggleAllPageRowsSelected(e.target.checked)}
-    //             /> */}
-    //         </>
-    //     ),
-    //     cell: ({ row }) => (
-    //         <>
-    //             <Checkbox 
-    //                 checked={row.getIsSelected()}
-    //                 onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //                 aria-label="Select row"
-    //             />
-    //             {/* <input
-    //                 type="checkbox"
-    //                 checked={row.getIsSelected()}
-    //                 disabled={!row.getCanSelect()}
-    //                 onChange={(e) => row.toggleSelected(e.target.checked)}
-    //             /> */}
-            
-    //         </>
-    //     ),
-    //     enableSorting: false,
-    //     enableHiding: false,
-    //     meta: {
-    //         className: "flex flex-col justify-center items-center min-w-4 max-w-16",
-    //     }
-    // },

@@ -25,7 +25,7 @@ const ProtectedRoutes = () => (
 
             <Route path="folders" element ={<FoldersPage />} />
             <Route path="folder/:folderId" element ={<ViewFolderPage />} />
-            <Route path="folder/:folderIdId/edit" element ={<EditFolderPage />} />
+            <Route path="folder/:folderId/edit" element ={<CreateFolderPage />} />
             <Route path="folder/create" element ={<CreateFolderPage />} />
             
             <Route path="file:id" element ={<FilePage />} />
@@ -42,3 +42,4 @@ const ProtectedRoutes = () => (
 )
 
 export default ProtectedRoutes;
+

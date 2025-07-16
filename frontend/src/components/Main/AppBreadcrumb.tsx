@@ -27,7 +27,6 @@ const breadcrumbMap: Record<string, string> = {
             return segments.slice(0, i + 1).join('/');
         }
     )
-    console.log('This is paths: ', paths)
 
     return (
         //TODO: Improve this breadcrumb to be really dynamic. 

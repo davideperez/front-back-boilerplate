@@ -1,6 +1,6 @@
 import AppSidebar from "./AppSidebar";
 
-import { Outlet, /* useLocation */ } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 
 import { Toaster } from "@/components/ui/sonner"
 
@@ -17,6 +17,7 @@ import AppBreadcrumb from "./AppBreadcrumb";
 
 
 export default function MainLayout() {
+    const { params } = useParams()
     return (
         <SidebarProvider className="w-screen">
             <Toaster position="bottom-right" richColors />
@@ -30,11 +31,11 @@ export default function MainLayout() {
             >
                 <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 justify-between">
                     <div className="flex items-center">
-                        <SidebarTrigger className="-ml-1" />
+                        <SidebarTrigger className="-ml-1" />    
                         <Separator orientation="vertical" className="mr-2 h-4"/>
-                        <AppBreadcrumb 
+                        {/* <AppBreadcrumb 
                             location={location}
-                        />
+                        /> */}
                     </div>
                     <div>
                         <ModeToggle />

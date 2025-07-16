@@ -68,7 +68,6 @@ export function  FoldersTable<TData, TValue>({
     })
     
     const onPageSizeChange = (value: string) => {
-        console.log("FoldersTable.tsx > onPageSizeChange > value: ", value)
         
         const newPageSize = Number(value)
 
@@ -252,3 +251,4 @@ export function  FoldersTable<TData, TValue>({
         </div>
     )
 }
+

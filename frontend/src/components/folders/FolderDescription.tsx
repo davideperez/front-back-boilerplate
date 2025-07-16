@@ -1,13 +1,15 @@
 import { Card } from "../ui/card"
-import { FolderDetailType } from "@/types/folder"
-import { Separator } from "../ui/separator"
-import { h3, h4, large } from "../styles"
-import { format } from "date-fns/format"
-import { formatDistance  } from "date-fns"
 import { es } from "date-fns/locale"
-import { Avatar, AvatarImage,AvatarFallback } from "../ui/avatar"
-import { CopyIcon } from "@radix-ui/react-icons"
 import { Button } from "../ui/button"
+import { format } from "date-fns/format"
+import { h3, h4, large } from "../styles"
+import { formatDistance  } from "date-fns"
+import { Separator } from "../ui/separator"
+import { FolderDetailType } from "@/types/folder"
+import { useNavigate, useParams } from 'react-router-dom'
+import { CopyIcon, Pencil1Icon } from "@radix-ui/react-icons"
+import { Avatar, AvatarImage,AvatarFallback } from "../ui/avatar"
+
 // import { useEffect, useState } from "react"
 
 interface FolderDescriptionProps {
@@ -15,7 +17,6 @@ interface FolderDescriptionProps {
 }
 
 export function FolderDescription ({ folder }: FolderDescriptionProps ) {
-    console.log("Folder Description > folder", folder)
     /* const [ folderData, setFolderData ] = useState()
     
     useEffect(() => {
@@ -23,6 +24,9 @@ export function FolderDescription ({ folder }: FolderDescriptionProps ) {
 
         setFolderData(folder?.folder)
     }, []) */
+    const navigate = useNavigate()
+    const { folderId } = useParams<{ folderId: string }>()
+    
     return (
         <div>
             {folder ? (
@@ -34,9 +38,23 @@ export function FolderDescription ({ folder }: FolderDescriptionProps ) {
                                 <AvatarFallback>Foto del Legajo</AvatarFallback>
                             </Avatar>
                             {/* Copy Info Button */}
-                            <Button variant="secondary" className="h-min w-2" >
-                                <CopyIcon  />
-                            </Button>
+                            <div className="flex gap-2">
+                                <Button variant="secondary" className="h-min w-2" >
+                                    <CopyIcon  />
+                                </Button>
+                                <Button 
+                                    variant="secondary" 
+                                    className="h-min w-2" 
+                                    onClick={ (e) => {
+                                            e.stopPropagation();
+                                            console.log("Clicked the edit button for row.original._id: ")
+                                            navigate(`/folder/${folderId}/edit`)
+                                        }
+                                    }
+                                >
+                                    <Pencil1Icon  />
+                                </Button>
+                            </div>
                         </div>
                         <h4 className={`${h4} mb-2`}>Información Básica</h4>
                         <div className="flex flex-row gap-2">
@@ -56,7 +74,6 @@ export function FolderDescription ({ folder }: FolderDescriptionProps ) {
                             )}</p>
                         </div>
                         
-                        
                         <Separator className="mt-2"/>
                         <h4 className={`${h4} mb-2 mt-2`}>Nacimiento</h4>
                         <div className="flex flex-row gap-2">
@@ -71,7 +88,6 @@ export function FolderDescription ({ folder }: FolderDescriptionProps ) {
                             <p className={large}>Lugar: </p>
                             <p> {`${folder?.city}, ${folder?.state}, ${folder?.country}`}</p>
                         </div>
-
 
                         <Separator className="mt-2"/>
                         <h4 className={`${h4} mb-2 mt-2`}>Documento de Identidad</h4>

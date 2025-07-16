@@ -6,6 +6,7 @@ import {
 
 import { axiosInstance as api } from "./axios"
 
+
 export const getFolder = async (id: string ): Promise<
     {
         message: string,
@@ -38,6 +39,21 @@ export const createFolder = async (formData: FormData ): Promise<FolderDetailTyp
             'Content-Type': 'multipart/form-data',
         }
     })
-    const CreateFolderResponse: FolderDetailType = res.data
-    return CreateFolderResponse
+    const createFolderResponse: FolderDetailType = res.data
+    return createFolderResponse
+}
+
+export const updateFolder = async (formData: FormData, folderId: string ): Promise<FolderDetailType> => {
+    console.log('Hi from updateFolder!')
+    console.log('updateFolder > formData prop: ', formData)
+    console.log('updateFolder > folderId prop: ', folderId)
+    const res = await api.put(`/folders/${folderId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        }
+    })
+    const updateFolderResponse: FolderDetailType = res.data
+    console.log('updateFolder > updateFolderResponse: ', updateFolderResponse)
+
+    return updateFolderResponse
 }

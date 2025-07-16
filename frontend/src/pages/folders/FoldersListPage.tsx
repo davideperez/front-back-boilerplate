@@ -35,12 +35,12 @@ export function FoldersPage() {
         loading,
         error
     } = useSelector((state: RootState) => state.folders)
-    console.log("--------------------------------------------------------------------")
+    /* console.log("--------------------------------------------------------------------")
     console.log("FoldersListPage.tsx > FoldersPage > folders: ", folders)
     console.log("FoldersListPage.tsx > FoldersPage > pagination: ", pagination)
     console.log("FoldersListPage.tsx > FoldersPage > loading: ", loading)
     console.log("FoldersListPage.tsx > FoldersPage > error: ", error)
-    console.log("--------------------------------------------------------------------")
+    console.log("--------------------------------------------------------------------") */
     // ------------------------------------- Redux Thunk: Fetches Folders on First Mount ----------------------------------------------------------
     
     // Inicializa el dispatch tipado para lanzar acciones async (thunks) del store
@@ -63,13 +63,13 @@ export function FoldersPage() {
                 page: pageIndex + 1,
                 pageSize: newPageSize,
             }
-            console.log("FoldersListPage.tsx > setPagination > query: ", query)
             
             /* 3 Dispatches the fethicng folders thunk with the built query */
             await dispatch(fetchFoldersThunk(query))
         },
         [dispatch]
     )
+    
     // ------------------------------------- onDelete ---------------------------------------------------------------------------------
     const onDelete = useCallback(
         async (folderId: string, userId: string) => {
@@ -88,20 +88,12 @@ export function FoldersPage() {
         },
         [dispatch]
     )
-    
-    // ------------------------------------- onEdit -------------------------------------------------------
-    const onEdit =  useCallback(
-        (folderId: string) => {
-            alert("This is the delete. folderId: "+ folderId)
-        }, 
-        []
-    )
-    
+  
     // ------------------------------------- table columns building -------------------------------------------------------
     
     const columnsInstance = useMemo( // TODO: Adjust the type.
-        () => folderColumns({onEdit, onDelete}),
-        [onEdit, onDelete]
+        () => folderColumns({ onDelete }),
+        [onDelete]
     )
     
     // ------------------------------------- Exception logic -------------------------------------------------------
