@@ -17,7 +17,7 @@ import { UpdateFolderSchema } from '../domain/dtos/update/updateFolders.dto'
 import { MongoIdSchema } from '../../../shared/dtos/mongoId.Schema'
 
 import { Folder, FolderSchema } from '../domain/folders.entity'
-import { uploadImageToCloudinary } from '../../../connections/cloudinary.connection'
+import { removeFileFromCloudinary, uploadImageToCloudinary } from '../../../connections/cloudinary.connection'
 
 export class ExpressFoldersController {
   private readonly getFolderByIdUseCase: GetFolderByIdUseCase
@@ -40,6 +40,7 @@ export class ExpressFoldersController {
     this.updateFolderByIdUseCase = input.updateFolderByIdUseCase
     this.deleteFolderByIdUseCase = input.deleteFolderByIdUseCase
   }
+
     httpGetFolderById = async (req: Request, res: Response): Promise<void> => {
         try {
             // 1 Extract the data
@@ -58,7 +59,7 @@ export class ExpressFoldersController {
                 res.status(404).json({ error: 'Folder not found' });
                 return;
             }
-            console.log("folders.controller.express.ts > httpGetFolderById > folder: ", folder)
+            // console.log("folders.controller.express.ts > httpGetFolderById > folder: ", folder)
             // 5 Response
             res.status(200).json({ 
                 message: "Folder succesfully retrieved.", 
@@ -130,6 +131,7 @@ export class ExpressFoldersController {
             res.status(500).json({error: err.message })
         }
     }
+    
     httpCreateFolder = async (req: Request, res: Response): Promise<void> => {
         try {
             // 1 Extract the data
@@ -176,6 +178,7 @@ export class ExpressFoldersController {
             }
             // 6.1 Response
              // 201 Created
+             console.log("THIS IS THE JUST CREATED FOLDER: ", newFolder)
             res.status(201).json({ 
                 message: 'Folder created successfully.', 
                 data: newFolder 
@@ -186,31 +189,57 @@ export class ExpressFoldersController {
             res.status(500).json({error: err.message}) // 500 Internal Server Error
         }
     }
+
     httpUpdateFolderById = async (req: Request, res: Response): Promise<void> => {
         try {
             // 1 Extract the data
             const folderId = MongoIdSchema.safeParse(req.params.id)
+            console.log("1 --------------------------------> httpUpdateFolderById > folderId: ", folderId)
+            
+            console.log("2 -------------------------------->  httpUpdateFolderById > req.body: ", req.body)
             const parsedFolder = UpdateFolderSchema.safeParse(req.body)
+            
+            console.log("3 -------------------------------->  httpUpdateFolderById > parsedFolder: ", parsedFolder)
+            console.log("4 --------------------------------> httpUpdateFolderById > UpdateFolderSchema: ", UpdateFolderSchema._getCached().shape)
 
             // 2 Validate the data
             if (!parsedFolder.success) {
                 res.status(422).json({ errors: parsedFolder.error.format()})
                 return
             }
-
+            
             if (!folderId.success) {
                 res.status(422).json({ errors: folderId.error.format()})
                 return
             }
 
-            // 3 Call the usecase. 
+            // 3 If new image, delete the previous one and upload the new one: 
+            const folderDataImage = req.file?.buffer; // Get the image from the request
+
+            // 3.1 If image, delete the previous one. 
+            
+            if (folderDataImage) {
+                await removeFileFromCloudinary(String(parsedFolder.data.profilePicture))
+            }
+            
+            // 3.2 If image, upload the new one. 
+            
+            if (folderDataImage) {
+                const imageUrl = await uploadImageToCloudinary(folderDataImage)
+                parsedFolder.data.profilePicture = imageUrl
+            }
+
+            // 4 Call the usecase. 
             const folder = await this.updateFolderByIdUseCase.execute(folderId.data, parsedFolder.data)
 
-            // 4 
+            // 5 
             if(!folder) {
                 res.status(400).json({ message: "Folder not found"})
             }
-            // 5 Response
+            
+            console.log("httpUpdateFolderById > folder: ", folder)
+            
+            // 6 Response
             res.status(200).json({ 
                 message: "Folder updated succesfully", 
                 updatedFolder: folder
@@ -220,6 +249,7 @@ export class ExpressFoldersController {
             res.status(500).json({ error: err.message })
         }
     }
+
     httpDeleteFolderById = async (req: Request, res: Response): Promise<void> => {
         try {
             // 1 Extract the data

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 // 1 Read a Full Folder
+//TODO: Analyize if perhaps is better to create a type for the reading, another for the creation and another for de editing the folder.
 export const FolderDetailSchema = z.object({
     _id: z.string().optional(),
     firstName: z.string().min(1, "El nombre es requerido."),
@@ -13,10 +14,13 @@ export const FolderDetailSchema = z.object({
         .refine(file => file instanceof File, {
                 message: "La foto de Legajo es requerida.",
             }
-        ), // TODO: IMPORTANT: Limit this to 4mb
-    city: z.string().min(1, "La ciudad de nacimiento es requerida.") ,
-    state: z.string().min(1, "La provincia o estado de nacimiento es requerido") ,
-    country: z.string().min(1, "El país de nacimiento es requerido.") ,
+        )
+        .optional(), // TODO: IMPORTANT: Limit this to 4mb
+    placeOfBirth: z.object({
+        city: z.string().min(1, "La ciudad de nacimiento es requerida.") ,
+        state: z.string().min(1, "La provincia o estado de nacimiento es requerido") ,
+        country: z.string().min(1, "El país de nacimiento es requerido.") ,
+    }),
     sex: z.enum(["M", "F"], {
         errorMap: () => ({ message: "El sexo es requerido."})
     }),

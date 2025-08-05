@@ -2,7 +2,7 @@ import { Card } from "../ui/card"
 import { es } from "date-fns/locale"
 import { Button } from "../ui/button"
 import { format } from "date-fns/format"
-import { h3, h4, large } from "../styles"
+import { h4, large } from "../styles"
 import { formatDistance  } from "date-fns"
 import { Separator } from "../ui/separator"
 import { FolderDetailType } from "@/types/folder"
@@ -16,16 +16,19 @@ interface FolderDescriptionProps {
     folder: FolderDetailType | null
 }
 
-export function FolderDescription ({ folder }: FolderDescriptionProps ) {
-    /* const [ folderData, setFolderData ] = useState()
-    
-    useEffect(() => {
-        if (!folder) return
+export function FolderDescription ({ folder }: FolderDescriptionProps) {
+    /*
+        const [ folderData, setFolderData ] = useState()
+        
+        useEffect(() => {
+            if (!folder) return
 
-        setFolderData(folder?.folder)
-    }, []) */
+            setFolderData(folder?.folder)
+        }, []) 
+    */
     const navigate = useNavigate()
     const { folderId } = useParams<{ folderId: string }>()
+    console.log("FolderDescription.tsx > folder: ", folder)
     
     return (
         <div>
@@ -34,7 +37,7 @@ export function FolderDescription ({ folder }: FolderDescriptionProps ) {
                     <Card className="flex flex-col p-5 gap-2">
                         <div className="flex flex-row justify-between">
                             <Avatar className="h-auto min-w-32 ">
-                                <AvatarImage src={folder?.profilePicture}/>
+                                <AvatarImage src={String(folder?.profilePicture)}/>
                                 <AvatarFallback>Foto del Legajo</AvatarFallback>
                             </Avatar>
                             {/* Copy Info Button */}
@@ -86,7 +89,7 @@ export function FolderDescription ({ folder }: FolderDescriptionProps ) {
                         </div>
                         <div className="flex flex-row gap-2">
                             <p className={large}>Lugar: </p>
-                            <p> {`${folder?.city}, ${folder?.state}, ${folder?.country}`}</p>
+                            <p> {`${folder?.placeOfBirth.city}, ${folder?.placeOfBirth.state}, ${folder?.placeOfBirth.country}`}</p>
                         </div>
 
                         <Separator className="mt-2"/>

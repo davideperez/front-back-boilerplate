@@ -1,9 +1,10 @@
-import { z } from "zod"
 import { FolderSchema } from "../../folders.entity"
 
 export const UpdateFolderSchema = FolderSchema.pick({
+    _id: true,
     firstName: true,
     lastName: true,
+    birthDate: true,
     profilePicture: true,
     nationality: true,
     identityDocumentType: true,
@@ -15,4 +16,4 @@ export const UpdateFolderSchema = FolderSchema.pick({
 }).extend({
     placeOfBirth: FolderSchema.shape.placeOfBirth.partial().optional()
 })
-.partial().strict()
+.partial().strict() // TODO: Isnt this a contradiction?

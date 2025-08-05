@@ -15,9 +15,9 @@ export const getFolder = async (id: string ): Promise<
     > => {
     const res = await api.get(`/folders/${id}`)
     const FolderResponse = res.data
+    console.log("This is the folder that was just requested: ", FolderResponse)
     return FolderResponse
 }
-
 
 export const getFolders = async (params: GetFoldersParamsType ): Promise<getAllFoldersResponseType> => {
     const res = await api.get('/folders', { params })

@@ -2,15 +2,15 @@
 
 import { z } from "zod";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useParams } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { ChangeEvent, useEffect, useState } from "react";
 import { CalendarIcon } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CreateFolderFormSchema, FolderDetailType } from "@/types/folder";
 import { createFolder, getFolder, updateFolder } from "@/api/folders-api";
-import { CreateFolderFormSchema } from "@/types/folder";
 
 import { toast } from "sonner";
 
@@ -22,12 +22,14 @@ import {
     FormControl, 
     FormDescription, 
 } from "../ui/form";
+
 import { 
     Card, 
     CardTitle,
     CardHeader, 
     CardContent, 
 } from "../ui/card";
+
 import { 
     Select,
     SelectItem, 
@@ -35,47 +37,53 @@ import {
     SelectTrigger,
     SelectContent, 
 } from "../ui/select";
+
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Calendar } from '../ui/calendar';
 import { Separator } from "../ui/separator";
-import { formItemClass, h1, h3 } from "../styles";
-import { Avatar, AvatarImage,AvatarFallback } from "../ui/avatar"
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { error } from "console";
-
+import { formItemClass, h1, h3, small } from "../styles";
+import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar"
+import { 
+    Popover, 
+    PopoverContent, 
+    PopoverTrigger 
+} from "../ui/popover";
 
 interface CreateFolderProps {
     onSuccess: () => void,
-    // editMode: boolean,
     folderId?: string
 }
 
 type CreateFolderFormData = z.infer<typeof CreateFolderFormSchema>
 
-const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderProps) => {
-    // folderId = "684af2a8964250763bcdb5f6"
-    // editMode = true
+const CreateFolderForm = ({ onSuccess }: CreateFolderProps) => {
     console.log('============================================================================================================ > Hi from CreateFolderForm!!!')
     
     const [ folder, setFolder ] = useState<CreateFolderFormData>()
+    const [ preview, setPreview ] = useState<string | null>(null);
+    const [ showImageInput, setShowImageInput ] = useState<boolean>(false);
     
     const { folderId } = useParams<{ folderId: string }>()
     
+    /* Just a logger of the current mode */
     if (folderId) {
-        console.log('Hi from CreateFolderForm > EDIT!')
+        console.log('Hi from CreateFolderForm > EDIT MODE!')
     } else {
-        console.log('Hi from CreateFolderForm > CREATE!')
+        console.log('Hi from CreateFolderForm > CREATE MODE!')
     }
 
-    console.log("This is CreateFolderForm > folderId, porque edit mode: ", folderId)
-
+    /* 1 Folder Fetching if EDIT MODE*/
     useEffect(() => {
         if (folderId) {
             const fetchFolder = async () => {
                 try {
-                    const response = await getFolder(folderId)
-                    console.log("This is CreateFolderForm > useEffect > fetchFolder > getFolder > response.data:", response.data)
+                    const response: { 
+                        message: string, 
+                        data: FolderDetailType 
+                    } = await getFolder(folderId)
+
+                    console.log("CreateFolderForm > useEffect > fetchFolder > getFolder > response.data:", response.data)
                     setFolder(response.data)
                 } catch (error) {
                     console.error(error)                
@@ -85,54 +93,15 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
         }
     },[folderId])
 
-    console.log("This is CreateFolderForm > folder:", folder)
-
-    /* 1 Implementation of React Hook Form  */
+    // console.log("This is CreateFolderForm > folder:", folder)
     
-    // Local storage memory
-    useEffect(() => {
-        const subscription = form.watch(
-            (value: unknown) => {
-                try {
-                    if(!folder) {
-                        localStorage.setItem('create-folder-form', JSON.stringify(value))
-                    }
-                } catch (error) {
-                    console.error("Error saving form data to localStorage", error)
-                }
-            }
-        )
-        return () => subscription.unsubscribe();
-    })
-
     const savedFormData = typeof window !== 'undefined' 
         ? localStorage.getItem('create-folder-form')
         : null;
-    
-    console.log("This is folder: ", folder)
-    // TODO: Upgrade this logic, perhaps a form for each case. But it is read a bit messy.
-    // If edit, loads the selected Folder in the form, if not, it is createion form fills it with the default or stored values.
-    // Edition case
-    /*
-    {
-        firstName: folder.firstName,
-        lastName: folder.lastName,
-        birthDate: folder.birthDate,
-        profilePicture: undefined,
-        city: folder.city,
-        state: folder.state,
-        country: folder.country,
-        sex: folder.sex,
-        nationality: folder.nationality,
-        identityDocumentType: folder.identityDocumentType,
-        identityDocumentNumber: folder.identityDocumentNumber,
-        identityDocumentExpirationDate: folder.identityDocumentExpirationDate,
-        school: folder.school,
-        schoolYear: folder.schoolYear,
-        createdBy: folder.createdBy,
-    }
-    */
 
+    // console.log("This is folder: ", folder)
+    
+    /* 3 Form Initial Values Setler */
     const defaultValues: CreateFolderFormData = savedFormData
         ? JSON.parse(savedFormData)
         : {
@@ -152,47 +121,106 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
             schoolYear: '',
             createdBy: 'David', // TODO: Replace when user logic is ready
         }
-    
-    console.log("This is CreateFolderForm > defaultValues: ", defaultValues)
-    
+
+    /*  */
+
     const form = useForm<CreateFolderFormData>({
         resolver: zodResolver(CreateFolderFormSchema),
         defaultValues
     })
 
+    /* A */
+    useEffect(() => {
+        console.log("Form state errors", form.formState.errors);
+    }, [form.formState]);
+    
+    /* 2 Form Memory: Local storage management */
+    useEffect(() => {
+        console.log("ALERT: The Local Storage useEffect triggered, because [] dependencies.")
+        const subscription = form.watch(
+            (value: unknown) => { // TODO: To review is that unkown safe there?
+                try {
+                    if(!folder) {
+                        localStorage.setItem('create-folder-form', JSON.stringify(value))
+                    }
+                } catch (error) {
+                    console.error("Error saving form data to localStorage", error)
+                }
+            }
+        )
+        return () => subscription.unsubscribe();
+    }, [form, folder])
+
     // If edit mode, then fill the form with the current Folder Info.
     useEffect(() => {
+        console.log("ALERT: The EDIT useEffect triggered, because [folder, form] dependencies.")
         if (folder) {
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { profilePicture, ...rest } = folder
+            const { profilePicture, placeOfBirth, createdAt, createdBy, updatedAt, updatedBy, deletedAt, deletedBy, ...rest } = folder
+            console.log("CreateFolderForm > edit mode useEffect > ...rest", rest)
+
+            /* 1 */
             form.reset({
+                city: placeOfBirth.city,
+                state: placeOfBirth.state,
+                country: placeOfBirth.country,
                 ...rest
             })
         }
-    }, [folder, form]) // TODO: Why to add form as a dependency here?
+    }, [folder, form,]) // TODO: Why to add form as a dependency here?
 
-    /* 2 onSubmit */
+    /* 4 Profile Picture Change - Handler  */
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>)=> {
+        const file = e.target.files?.[0]
+        /*  */
+        if (file) {
+            /* 1 */
+            console.log("SETTING VALUEE!!")
+            console.log("SETTING VALUEE!! > file: ", file)
+            console.log("SETTING VALUEE!! > form", form)
+            setPreview(URL.createObjectURL(file))
+            
+            /* 2 */
+            form.setValue("profilePicture", file)
+            console.log("SETTING VALUEE!! > form done: ", form)
+            console.log("SETTING VALUEE!! > preview: ", preview)
+        }
+    }
+
+    /* 5 Form Submition - Handler */
     const onSubmit = form.handleSubmit(async (values: z.infer<typeof CreateFolderFormSchema>) => {
         /* Complete the form info with the internal necessary data */
         console.log("Hi from onSubmit button!")
+        console.log("Hi from onSubmit button!")
 
+        /* Initializes a form */
         const formData = new FormData()
-
+        console.log("This is formData: ", formData)
+        
+        for (const [key, value] of formData.entries()) {
+            console.log("This is formData before being build: ", key, value)
+        }
+        
+        /* Form object construction */
         Object.entries(values).forEach(
             ([key, value]) => {
-                /* Images */
+                /* File/Images */
                 if (key === 'profilePicture' && value instanceof File) {
-                    formData.append("image", value);
-                
-                    /* Anidated object property */
+                    // if (!folder) {
+                        console.log("Agregando la imagen al formulario como image.")
+                        formData.append("image", value);
+                    // } else {
+                    //     console.log("Agregando la imagen al formulario como image.")
+                    //     formData.append("image", value)
+                    // }
+                /* Anidated objects properties */
                 } else if (typeof value === "object" && value !== null && !(value instanceof Date)) {
                     Object.entries(value).forEach(
                         ([subKey, subValue]) => {
                             formData.append(`${key}.${subKey}`, String(subValue ?? ""))
                         }
                     )
-
-                    /* Dates */
+                /* Dates */
                 } else if (value instanceof Date) {
                     formData.append(key, value.toISOString())
                 
@@ -202,13 +230,22 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
                 }
             }
         )
-        
+
+        console.log("///////////////////////////////////////////// formData already build: /////////////////////////////////////////////");
+        for (const [key, value] of formData.entries()) {
+            console.log(key," : ", value);
+        }
+        console.log("///////////////////////////////////////////// FIN /////////////////////////////////////////////");
+
+        /* API calls */
         try {
-            if(folder) {
+            if(folder && typeof folder._id === "string" ) {
+                console.log("SE ESTA POR LLAMAR EL EDIT!!")
                 await updateFolder(formData, folder._id)
                 toast.success("Los cambios fueron guardados correctamente.")
                 onSuccess()
             } else {
+                console.log("SE ESTA POR LLAMAR EL CREATE!!")
                 await createFolder(formData)
                 localStorage.removeItem('create-folder-form')
                 toast.success("El legajo fue creado correctamente!")
@@ -224,15 +261,16 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
         }
     })
 
-
-    useEffect(() => {
+    /* Form states logger */
+   /*  useEffect(() => {
         console.log("USEFFECT form: ", form)
-    }, [form])
+    }, [form]) */
+
     return (
         <div className="flex flex-col justify-start">
             {
                 folder ?
-                <h1 className={`${h1} font-semibold`}><span className="font-semibold">Editar: </span> Legajo de {folder.firstName}</h1> // TODO: This style is hardcoded. Solve this.
+                <h1 className={`${h1} font-semibold`}><span className="font-semibold">Editar: </span> Legajo de {folder.firstName} {folder.lastName}</h1> // TODO: This style is hardcoded. Solve this.
                 : <h1 className={h1}>Nuevo Legajo</h1>
             }
             <Card className="m-8 px-12 py-4 w-1/2">
@@ -317,59 +355,103 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
                             />
                             {/* profilePicture */}
                             
-                            <FormField
-                                name='profilePicture'
-                                render={
-                                    ({field}) => (
-                                        <FormItem className={formItemClass}>
-                                            <FormLabel htmlFor="picture" >Foto del Legajo</FormLabel>
-                                            <FormControl>
-                                                <Input 
-                                                    id="picture" 
-                                                    type="file" 
-                                                    // maxLength={4194304}
-                                                    ref={field.ref}
-                                                    // {...field}
-                                                    onChange={(e: ChangeEvent<HTMLInputElement>)=> {
-                                                        
-                                                        const file = e.target.files?.[0]
-                                                        
-                                                        if (file) {
-                                                            console.log("SETTING VALUEE!!")
-                                                            console.log("SETTING VALUEE!! > file: ", file)
-                                                            console.log("SETTING VALUEE!! > form", form)
-
-                                                            form.setValue("profilePicture", file)
-
-                                                            console.log("SETTING VALUEE!! > form done: ", form)
-
-                                                        }
-                                                    }}
-                                                />
-                                            </FormControl>
-                                            {
-                                                form.formState.errors?.profilePicture &&
-                                                    <FormDescription>
-                                                        {String(form.formState.errors?.profilePicture?.message || '')}
-                                                    </FormDescription>
-                                            }
-                                        </FormItem>
-                                    )
-                                }
-                            />
                             {
-                                folder && 
-                                    (
-                                        <Avatar className="h-auto min-w-32 ">
-                                            <AvatarImage src={String(folder?.profilePicture)} />
-                                            <AvatarFallback>Foto del Legajo</AvatarFallback>
-                                        </Avatar>
-                                    )
+                                folder 
+                                ? (
+                                    <div>
+                                        <h4 className={`${small} pb-6`}>Foto del Legajo</h4>
+                                        { showImageInput ? (
+                                            <>
+                                                <Avatar className="min-h-28 h-auto min-w-32 mb-8 items-center">
+                                                    <AvatarImage 
+                                                        src={preview} 
+                                                    />
+                                                    <AvatarFallback className=""> Nueva Foto</AvatarFallback>
+                                                </Avatar>
+                                                <FormField
+                                                    name='profilePicture'
+                                                    render={
+                                                        ({field}) => (
+                                                            <FormItem className={`${formItemClass} pb-4`}>
+                                                                {/* <FormLabel htmlFor="picture" >Foto del Legajo</FormLabel> */}
+                                                                <FormControl>
+                                                                    <Input 
+                                                                        id="picture" 
+                                                                        type="file" 
+                                                                        // maxLength={4194304}
+                                                                        ref={field.ref}
+                                                                        // {...field}
+                                                                        onChange={handleImageChange}
+                                                                    />
+                                                                </FormControl>
+                                                                {
+                                                                    form.formState.errors?.profilePicture &&
+                                                                        <FormDescription>
+                                                                            {String(form.formState.errors?.profilePicture?.message || '')}
+                                                                        </FormDescription>
+                                                                }
+                                                            </FormItem>
+                                                        )
+                                                    }
+                                                />
+                                            </>
+                                        )
+                                        :
+                                        (
+                                            <Avatar className="h-auto min-w-32  mb-8">
+                                                <AvatarImage src={String(folder?.profilePicture)} />
+                                                <AvatarFallback>Foto del Legajo</AvatarFallback>
+                                            </Avatar>
+                                        )
+                                        }
+                                        <button 
+                                            onClick={() => {
+                                                setShowImageInput(prev => !prev)
+                                            }}
+                                            type="button"
+                                            className={cn(
+                                                "w-[180px] font-normal text-blue-500 text-start"
+                                            )}
+                                        >
+                                            { showImageInput ? "Cancelar" : "Cambiar Imagen" } 
+                                        </button>
+
+                                    </div>
+                                )
+                                : (
+                                    <FormField
+                                        name='profilePicture'
+                                        render={
+                                            ({field}) => (
+                                                <FormItem className={formItemClass}>
+                                                    <FormLabel htmlFor="picture" >Foto del Legajo</FormLabel>
+                                                    <FormControl>
+                                                        <Input 
+                                                            id="picture" 
+                                                            type="file" 
+                                                            ref={field.ref}
+                                                            onChange={handleImageChange}
+                                                            // maxLength={4194304}
+                                                            // {...field}
+                                                        />
+                                                    </FormControl>
+                                                    {
+                                                        form.formState.errors?.profilePicture &&
+                                                            <FormDescription>
+                                                                {String(form.formState.errors?.profilePicture?.message || '')}
+                                                            </FormDescription>
+                                                    }
+                                                </FormItem>
+                                            )
+                                        }   
+                                    />
+                                )
                             }
+
                             <Separator />
                             <h3 className={h3}>Información de Nacimiento</h3>
                             {/* birthDate */}
-                            <FormField
+                            <FormField 
                                 name='birthDate'
                                 render={
                                     ({field}) => (
@@ -418,7 +500,7 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
                             />
                             
                             {/* country */}
-                            <FormField
+                            <FormField 
                                 name='country'
                                 render={
                                     ({field}) => (
@@ -428,9 +510,9 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
                                                 <Input type="text" {...field}/>
                                             </FormControl>
                                             {
-                                                form.formState.errors?.country &&
+                                                form.formState.errors.placeOfBirth?.country &&
                                                     <FormDescription>
-                                                        {String(form.formState.errors?.country.message || '')}
+                                                        {String(form.formState.errors.placeOfBirth?.country.message || '')}
                                                     </FormDescription>
                                             }
                                         </FormItem>
@@ -438,7 +520,7 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
                                 }
                             />
                             {/* state  */}
-                            <FormField
+                            <FormField 
                                 name='state'
                                 render={
                                     ({field}) => (
@@ -448,9 +530,9 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
                                                 <Input type="text" {...field}/>
                                             </FormControl>
                                             {
-                                                form.formState.errors?.state &&
+                                                form.formState.errors.placeOfBirth?.state &&
                                                     <FormDescription>
-                                                        {String(form.formState.errors?.state.message || '')}
+                                                        {String(form.formState.errors.placeOfBirth?.state.message || '')}
                                                     </FormDescription>
                                             }
                                         </FormItem>
@@ -458,7 +540,7 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
                                 }
                             />
                             {/* city  */}
-                            <FormField
+                            <FormField 
                                 name='city'
                                 render={
                                     ({field}) => (
@@ -468,9 +550,9 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
                                                 <Input type="text" {...field}/>
                                             </FormControl>
                                             {
-                                                form.formState.errors?.city &&
+                                                form.formState.errors.placeOfBirth?.city &&
                                                     <FormDescription>
-                                                        {String(form.formState.errors?.city.message || '')}
+                                                        {String(form.formState.errors.placeOfBirth?.city.message || '')}
                                                     </FormDescription>
                                             }
                                         </FormItem>
@@ -643,7 +725,10 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
                                     )
                                 }
                             />
-                            <Button type="submit" className="mt-4 min-w-32 w-1/5">
+                            <Button 
+                                type="submit" 
+                                className="mt-4 min-w-32 w-1/5"
+                            >
                                 {
                                     folder
                                         ? "Guardar Cambios"
@@ -659,4 +744,3 @@ const CreateFolderForm = ({ onSuccess/*, editMode , folderId  */}: CreateFolderP
 }
 
 export default CreateFolderForm;
-

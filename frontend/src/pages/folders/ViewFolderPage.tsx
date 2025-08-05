@@ -8,7 +8,9 @@ import { FolderDetailType } from "@/types/folder"
 import { h2 } from "@/components/styles"
 
 export function ViewFolderPage() {
+
     console.log('Hi from ViewFolderPage!')
+    
     const { folderId } = useParams<{ folderId: string }>()
     
     const [ folder, setFolder ] = useState<FolderDetailType | null>(null)
@@ -18,7 +20,9 @@ export function ViewFolderPage() {
 
         const fetchFolder = async () => { // TODO: Change it to Redux
             try {
-                const folderData = await getFolder(folderId)
+                const folderData: { message: string, data: FolderDetailType } = await getFolder(folderId)
+                
+                console.log("ViewFolderPage.tsx > useEffect > getFolder > folderData: ", folderData)
                 
                 if (!folderData) {
                     console.error("No folder Data")
@@ -34,7 +38,7 @@ export function ViewFolderPage() {
         
         fetchFolder()
     }, [folderId])
-
+    
     return (
         <div className="flex gap-4 p-4">
             {/* Title */}
